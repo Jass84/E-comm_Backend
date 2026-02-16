@@ -1,0 +1,203 @@
+### Test Cart - Add Item
+POST http://localhost:5000/api/users/cart
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "productId": "PRODUCT_ID_HERE",
+  "quantity": 1
+}
+
+### Get Cart with Summary
+GET http://localhost:5000/api/users/cart
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Update Cart Item Quantity
+PUT http://localhost:5000/api/users/cart/PRODUCT_ID
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### Remove Item from Cart
+DELETE http://localhost:5000/api/users/cart/PRODUCT_ID
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Clear Entire Cart
+DELETE http://localhost:5000/api/users/cart
+Authorization: Bearer YOUR_USER_TOKEN
+
+### ===== ADDRESS MANAGEMENT =====
+
+### Get All Addresses
+GET http://localhost:5000/api/users/addresses
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Add New Address
+POST http://localhost:5000/api/users/addresses
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "phone": "9876543210",
+  "addressLine1": "123 Main Street",
+  "addressLine2": "Near Central Park",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "pincode": "400001",
+  "country": "India",
+  "isDefault": true
+}
+
+### Update Address
+PUT http://localhost:5000/api/users/addresses/ADDRESS_ID
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "fullName": "John Smith",
+  "phone": "9876543210",
+  "city": "Delhi"
+}
+
+### Set Default Address
+PUT http://localhost:5000/api/users/addresses/ADDRESS_ID/default
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Delete Address
+DELETE http://localhost:5000/api/users/addresses/ADDRESS_ID
+Authorization: Bearer YOUR_USER_TOKEN
+
+### ===== ORDER MANAGEMENT =====
+
+### Create Order (Checkout)
+POST http://localhost:5000/api/orders
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": "PRODUCT_ID_1",
+      "quantity": 2
+    },
+    {
+      "product": "PRODUCT_ID_2",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "John Doe",
+    "phone": "9876543210",
+    "addressLine1": "123 Main Street",
+    "addressLine2": "Near Central Park",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 29999,
+  "shippingPrice": 0,
+  "taxPrice": 5400,
+  "totalPrice": 35399,
+  "couponCode": ""
+}
+
+### Get My Orders
+GET http://localhost:5000/api/orders/my-orders
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Get My Orders with Filter (By Status)
+GET http://localhost:5000/api/orders/my-orders?status=Delivered
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Get My Orders with Pagination
+GET http://localhost:5000/api/orders/my-orders?page=1&limit=10
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Get Single Order Details
+GET http://localhost:5000/api/orders/ORDER_ID
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Cancel Order
+PUT http://localhost:5000/api/orders/ORDER_ID/cancel
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "reason": "Changed my mind"
+}
+
+### ===== SELLER ORDER MANAGEMENT =====
+
+### Get Seller Orders
+GET http://localhost:5000/api/orders/seller/orders
+Authorization: Bearer YOUR_SELLER_TOKEN
+
+### Update Order Status (Seller/Admin)
+PUT http://localhost:5000/api/orders/ORDER_ID/status
+Authorization: Bearer YOUR_SELLER_TOKEN
+Content-Type: application/json
+
+{
+  "status": "Processing",
+  "comment": "Order is being prepared"
+}
+
+### Update Order Status to Shipped
+PUT http://localhost:5000/api/orders/ORDER_ID/status
+Authorization: Bearer YOUR_SELLER_TOKEN
+Content-Type: application/json
+
+{
+  "status": "Shipped",
+  "comment": "Order shipped via express delivery"
+}
+
+### Update Order Status to Delivered
+PUT http://localhost:5000/api/orders/ORDER_ID/status
+Authorization: Bearer YOUR_SELLER_TOKEN
+Content-Type: application/json
+
+{
+  "status": "Delivered",
+  "comment": "Order delivered successfully"
+}
+
+### ===== ADMIN ORDER MANAGEMENT =====
+
+### Get All Orders (Admin)
+GET http://localhost:5000/api/orders
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### Get Orders by Status (Admin)
+GET http://localhost:5000/api/orders?status=Pending
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### Get Orders by Date Range (Admin)
+GET http://localhost:5000/api/orders?startDate=2026-01-01&endDate=2026-02-28
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### Get Orders with Pagination (Admin)
+GET http://localhost:5000/api/orders?page=1&limit=20
+Authorization: Bearer YOUR_ADMIN_TOKEN
+
+### ===== USER PROFILE =====
+
+### Get User Profile
+GET http://localhost:5000/api/users/profile
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Update User Profile
+PUT http://localhost:5000/api/users/profile
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "name": "John Doe Updated",
+  "phone": "9876543210"
+}

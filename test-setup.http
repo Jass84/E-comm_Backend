@@ -1,0 +1,129 @@
+### Test Server is Running
+GET http://localhost:5000
+Accept: application/json
+
+### Get All Categories
+GET http://localhost:5000/api/categories
+Accept: application/json
+
+### Get All Products
+GET http://localhost:5000/api/products
+Accept: application/json
+
+### Create Category (Admin Required)
+POST http://localhost:5000/api/categories
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+{
+  "name": "Electronics",
+  "description": "Electronic devices and gadgets",
+  "image": "https://via.placeholder.com/300"
+}
+
+### Create Another Category
+POST http://localhost:5000/api/categories
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+{
+  "name": "Fashion",
+  "description": "Clothing and accessories"
+}
+
+### Create Subcategory
+POST http://localhost:5000/api/categories
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_TOKEN_HERE
+
+{
+  "name": "Smartphones",
+  "description": "Mobile phones and accessories",
+  "parent": "PARENT_CATEGORY_ID"
+}
+
+### Get Category Tree
+GET http://localhost:5000/api/categories/tree
+Accept: application/json
+
+### Create Product (Seller Required - Use multipart/form-data in Postman)
+# Note: For file uploads, use Postman or Thunder Client
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+
+{
+  "title": "iPhone 15 Pro",
+  "description": "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system",
+  "price": 99999,
+  "comparePrice": 109999,
+  "category": "CATEGORY_ID_HERE",
+  "brand": "Apple",
+  "stock": 50,
+  "sku": "IPH15PRO-128-BLK",
+  "tags": ["smartphone", "apple", "iphone", "5g"]
+}
+
+### Search Products
+GET http://localhost:5000/api/products?search=iphone
+Accept: application/json
+
+### Filter by Category
+GET http://localhost:5000/api/products?category=CATEGORY_ID
+Accept: application/json
+
+### Filter by Price Range
+GET http://localhost:5000/api/products?minPrice=10000&maxPrice=50000
+Accept: application/json
+
+### Sort by Price (Low to High)
+GET http://localhost:5000/api/products?sort=price_asc
+Accept: application/json
+
+### Sort by Rating
+GET http://localhost:5000/api/products?sort=rating
+Accept: application/json
+
+### Get Single Product
+GET http://localhost:5000/api/products/PRODUCT_ID_OR_SLUG
+Accept: application/json
+
+### Update Product (Seller/Owner)
+PUT http://localhost:5000/api/products/PRODUCT_ID
+Content-Type: application/json
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+
+{
+  "title": "iPhone 15 Pro Max",
+  "price": 129999,
+  "stock": 45
+}
+
+### Delete Product
+DELETE http://localhost:5000/api/products/PRODUCT_ID
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+
+### Add Review (Authenticated User)
+POST http://localhost:5000/api/products/PRODUCT_ID/reviews
+Content-Type: application/json
+Authorization: Bearer YOUR_USER_TOKEN_HERE
+
+{
+  "rating": 5,
+  "comment": "Excellent product! Highly recommended."
+}
+
+### Get Seller Dashboard
+GET http://localhost:5000/api/seller/dashboard
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+Accept: application/json
+
+### Get Seller's Products
+GET http://localhost:5000/api/seller/products
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+Accept: application/json
+
+### Get Seller's Products with Filter
+GET http://localhost:5000/api/seller/products?status=active&page=1&limit=10
+Authorization: Bearer YOUR_SELLER_TOKEN_HERE
+Accept: application/json
