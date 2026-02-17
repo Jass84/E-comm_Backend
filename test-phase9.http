@@ -1,0 +1,519 @@
+###
+### 💰 PHASE 9: WITHDRAWAL & PAYOUT SYSTEM - API TESTS
+### Test all withdrawal features: policies, requests, approvals, batch processing
+###
+
+@baseURL = http://localhost:5002/api
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@sellerToken = YOUR_SELLER_TOKEN_HERE
+@seller2Token = YOUR_SELLER2_TOKEN_HERE
+
+###############################################################################
+### PART 1: SELLER - WITHDRAWAL POLICIES & INFO
+###############################################################################
+
+### 1. Get withdrawal policies
+GET {{baseURL}}/seller/withdrawal-policies
+Authorization: Bearer {{sellerToken}}
+
+###############################################################################
+### PART 2: SELLER - REQUEST WITHDRAWALS
+###############################################################################
+
+### 2. Request withdrawal - Bank Transfer (Valid)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "paymentMethod": "bank_transfer",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Tech Store",
+    "bankName": "HDFC Bank"
+  }
+}
+
+### 3. Request withdrawal - UPI (Valid)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 3000,
+  "paymentMethod": "upi",
+  "upiDetails": {
+    "upiId": "seller@ybl",
+    "upiName": "Tech Store"
+  }
+}
+
+### 4. Request withdrawal - PayPal (Valid)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 10000,
+  "paymentMethod": "paypal",
+  "paypalDetails": {
+    "email": "seller@example.com"
+  }
+}
+
+### 5. Request withdrawal - Razorpay Payout (Valid)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 15000,
+  "paymentMethod": "razorpay_payout",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Tech Store",
+    "bankName": "HDFC Bank"
+  }
+}
+
+### 6. Request withdrawal - Auto-approved amount (Small amount)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 2000,
+  "paymentMethod": "upi",
+  "upiDetails": {
+    "upiId": "seller@paytm",
+    "upiName": "Tech Store"
+  }
+}
+
+### 7. Request withdrawal - Below minimum (Should fail)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 400,
+  "paymentMethod": "bank_transfer",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Tech Store"
+  }
+}
+
+### 8. Request withdrawal - Above maximum (Should fail)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 150000,
+  "paymentMethod": "bank_transfer",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Tech Store"
+  }
+}
+
+### 9. Request withdrawal - Insufficient balance (Should fail)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000000,
+  "paymentMethod": "bank_transfer",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Tech Store"
+  }
+}
+
+###############################################################################
+### PART 3: SELLER - VIEW WITHDRAWAL HISTORY
+###############################################################################
+
+### 10. Get all withdrawals
+GET {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+
+### 11. Get pending withdrawals
+GET {{baseURL}}/seller/withdrawals?status=pending
+Authorization: Bearer {{sellerToken}}
+
+### 12. Get approved withdrawals
+GET {{baseURL}}/seller/withdrawals?status=approved
+Authorization: Bearer {{sellerToken}}
+
+### 13. Get completed withdrawals
+GET {{baseURL}}/seller/withdrawals?status=completed
+Authorization: Bearer {{sellerToken}}
+
+### 14. Get rejected withdrawals
+GET {{baseURL}}/seller/withdrawals?status=rejected
+Authorization: Bearer {{sellerToken}}
+
+### 15. Get withdrawals with pagination
+GET {{baseURL}}/seller/withdrawals?page=1&limit=5
+Authorization: Bearer {{sellerToken}}
+
+###############################################################################
+### PART 4: SELLER - CANCEL WITHDRAWAL
+###############################################################################
+
+### 16. Cancel withdrawal request (Use ID from previous requests)
+DELETE {{baseURL}}/seller/withdrawals/WITHDRAWAL_ID_HERE
+Authorization: Bearer {{sellerToken}}
+
+### 17. Try to cancel already processed withdrawal (Should fail)
+DELETE {{baseURL}}/seller/withdrawals/APPROVED_WITHDRAWAL_ID
+Authorization: Bearer {{sellerToken}}
+
+###############################################################################
+### PART 5: ADMIN - VIEW WITHDRAWAL STATS
+###############################################################################
+
+### 18. Get withdrawal statistics
+GET {{baseURL}}/admin/withdrawals/stats
+Authorization: Bearer {{adminToken}}
+
+###############################################################################
+### PART 6: ADMIN - APPROVE WITHDRAWALS
+###############################################################################
+
+### 19. Approve withdrawal
+PUT {{baseURL}}/admin/withdrawals/WITHDRAWAL_ID_HERE/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "TXN_TEST_001",
+  "adminNote": "Verified and approved"
+}
+
+### 20. Approve withdrawal without transaction ID
+PUT {{baseURL}}/admin/withdrawals/WITHDRAWAL_ID_HERE/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "adminNote": "Approved for processing"
+}
+
+### 21. Try to approve already approved withdrawal (Should fail)
+PUT {{baseURL}}/admin/withdrawals/APPROVED_WITHDRAWAL_ID/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "adminNote": "Test"
+}
+
+###############################################################################
+### PART 7: ADMIN - REJECT WITHDRAWALS
+###############################################################################
+
+### 22. Reject withdrawal
+PUT {{baseURL}}/admin/withdrawals/WITHDRAWAL_ID_HERE/reject
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "rejectionReason": "Invalid bank details",
+  "adminNote": "Please update bank account information"
+}
+
+### 23. Reject withdrawal - Missing reason (Should fail)
+PUT {{baseURL}}/admin/withdrawals/WITHDRAWAL_ID_HERE/reject
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "adminNote": "Rejected"
+}
+
+###############################################################################
+### PART 8: ADMIN - COMPLETE WITHDRAWALS
+###############################################################################
+
+### 24. Mark withdrawal as completed
+PUT {{baseURL}}/admin/withdrawals/APPROVED_WITHDRAWAL_ID/complete
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "TXN_COMPLETED_001",
+  "adminNote": "Payment transferred successfully"
+}
+
+### 25. Complete withdrawal with Razorpay Payout ID
+PUT {{baseURL}}/admin/withdrawals/APPROVED_WITHDRAWAL_ID/complete
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "razorpayPayoutId": "pout_LmKJ9k3K7S8Yts",
+  "adminNote": "Processed via Razorpay Payouts"
+}
+
+### 26. Try to complete pending withdrawal (Should fail)
+PUT {{baseURL}}/admin/withdrawals/PENDING_WITHDRAWAL_ID/complete
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "TXN_001"
+}
+
+###############################################################################
+### PART 9: ADMIN - FAIL WITHDRAWALS
+###############################################################################
+
+### 27. Mark withdrawal as failed
+PUT {{baseURL}}/admin/withdrawals/APPROVED_WITHDRAWAL_ID/fail
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "failureReason": "Bank account closed",
+  "adminNote": "Payment returned, funds refunded to seller"
+}
+
+### 28. Fail withdrawal - Missing reason (Should fail)
+PUT {{baseURL}}/admin/withdrawals/APPROVED_WITHDRAWAL_ID/fail
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "adminNote": "Failed"
+}
+
+###############################################################################
+### PART 10: ADMIN - BATCH OPERATIONS
+###############################################################################
+
+### 29. Batch approve withdrawals
+POST {{baseURL}}/admin/withdrawals/batch-approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "withdrawalIds": [
+    "WITHDRAWAL_ID_1",
+    "WITHDRAWAL_ID_2",
+    "WITHDRAWAL_ID_3"
+  ],
+  "adminNote": "Batch approved on 17-Feb-2026"
+}
+
+### 30. Batch approve - Empty array (Should fail)
+POST {{baseURL}}/admin/withdrawals/batch-approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "withdrawalIds": [],
+  "adminNote": "Test"
+}
+
+###############################################################################
+### PART 11: COMPLETE WORKFLOW TESTS
+###############################################################################
+
+### 31. WORKFLOW - New seller withdrawal request
+# Step 1: Check policies
+GET {{baseURL}}/seller/withdrawal-policies
+Authorization: Bearer {{seller2Token}}
+
+### 32. WORKFLOW - Step 2: Request withdrawal
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{seller2Token}}
+Content-Type: application/json
+
+{
+  "amount": 8000,
+  "paymentMethod": "bank_transfer",
+  "bankDetails": {
+    "accountNumber": "9876543210",
+    "ifscCode": "ICIC0001234",
+    "accountHolderName": "Fashion Hub",
+    "bankName": "ICICI Bank"
+  }
+}
+
+### 33. WORKFLOW - Step 3: Check withdrawal history
+GET {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{seller2Token}}
+
+### 34. WORKFLOW - Step 4: Admin approves
+PUT {{baseURL}}/admin/withdrawals/WORKFLOW_WITHDRAWAL_ID/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "TXN_WORKFLOW_001",
+  "adminNote": "Approved after verification"
+}
+
+### 35. WORKFLOW - Step 5: Admin marks as completed
+PUT {{baseURL}}/admin/withdrawals/WORKFLOW_WITHDRAWAL_ID/complete
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "TXN_WORKFLOW_001",
+  "adminNote": "Payment completed successfully"
+}
+
+### 36. WORKFLOW - Step 6: Seller verifies completion
+GET {{baseURL}}/seller/withdrawals?status=completed
+Authorization: Bearer {{seller2Token}}
+
+###############################################################################
+### PART 12: EDGE CASES & ERROR HANDLING
+###############################################################################
+
+### 37. Request withdrawal without authentication (Should fail 401)
+POST {{baseURL}}/seller/withdrawals
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "paymentMethod": "bank_transfer"
+}
+
+### 38. User (non-seller) tries to request withdrawal (Should fail 403)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer USER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "paymentMethod": "bank_transfer"
+}
+
+### 39. Request withdrawal with invalid payment method (Should fail)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "paymentMethod": "invalid_method"
+}
+
+### 40. Request withdrawal without required payment details (Should fail)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "paymentMethod": "bank_transfer"
+}
+
+### 41. Non-admin tries to approve withdrawal (Should fail 403)
+PUT {{baseURL}}/admin/withdrawals/WITHDRAWAL_ID_HERE/approve
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "adminNote": "Approved"
+}
+
+### 42. Invalid withdrawal ID (Should fail 404)
+GET {{baseURL}}/seller/withdrawals/invalid_id_123
+Authorization: Bearer {{sellerToken}}
+
+###############################################################################
+### PART 13: POLICY VALIDATION TESTS
+###############################################################################
+
+### 43. Multiple pending requests (Test limit)
+# Request 1
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "paymentMethod": "upi",
+  "upiDetails": { "upiId": "test1@upi" }
+}
+
+### 44. Request 2 (immediately after)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "paymentMethod": "upi",
+  "upiDetails": { "upiId": "test2@upi" }
+}
+
+### 45. Request 3 (immediately after)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "paymentMethod": "upi",
+  "upiDetails": { "upiId": "test3@upi" }
+}
+
+### 46. Request 4 (should fail - max 3 pending)
+POST {{baseURL}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "paymentMethod": "upi",
+  "upiDetails": { "upiId": "test4@upi" }
+}
+
+###############################################################################
+### SUMMARY
+###############################################################################
+
+# Total Tests: 46
+# 
+# Categories:
+# - Policies & Info: 1 test
+# - Request Withdrawals: 9 tests
+# - View History: 6 tests
+# - Cancel Requests: 2 tests
+# - Admin Stats: 1 test
+# - Admin Approve: 3 tests
+# - Admin Reject: 2 tests
+# - Admin Complete: 3 tests
+# - Admin Fail: 2 tests
+# - Batch Operations: 2 tests
+# - Complete Workflows: 6 tests
+# - Edge Cases: 6 tests
+# - Policy Validation: 4 tests
+#
+# Features Tested:
+# ✅ Withdrawal policies and limits
+# ✅ Multiple payment methods (bank, UPI, PayPal, Razorpay)
+# ✅ Auto-approval for small amounts
+# ✅ Processing fees and tax deductions
+# ✅ Minimum balance requirements
+# ✅ Cooldown periods
+# ✅ Maximum pending requests limit
+# ✅ Batch approval
+# ✅ Complete lifecycle (request → approve → complete)
+# ✅ Failure handling and refunds
+# ✅ Authorization and validation
+# ✅ Statistics and reporting

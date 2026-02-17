@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -68,6 +69,86 @@ exports.createOrder = async (req, res) => {
       });
     }
 
+    // Handle coupon validation and discount
+    let discountAmount = 0;
+    let couponApplied = null;
+
+    if (couponCode) {
+      const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+
+      if (!coupon) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid coupon code'
+        });
+      }
+
+      // Validate coupon
+      if (!coupon.isActive) {
+        return res.status(400).json({
+          success: false,
+          message: 'This coupon is no longer active'
+        });
+      }
+
+      if (coupon.startDate > new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: 'This coupon is not yet active'
+        });
+      }
+
+      if (coupon.expiryDate < new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: 'This coupon has expired'
+        });
+      }
+
+      if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
+        return res.status(400).json({
+          success: false,
+          message: 'This coupon has reached its usage limit'
+        });
+      }
+
+      if (!coupon.canUserUseCoupon(req.user._id)) {
+        return res.status(400).json({
+          success: false,
+          message: `You have already used this coupon ${coupon.usageLimitPerUser} time(s)`
+        });
+      }
+
+      // Calculate discount based on itemsPrice (before shipping and tax)
+      const discountResult = coupon.calculateDiscount(itemsPrice);
+
+      if (!discountResult.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: discountResult.message
+        });
+      }
+
+      discountAmount = discountResult.discount;
+      couponApplied = {
+        code: coupon.code,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue,
+        discount: discountAmount
+      };
+
+      // Increment coupon usage (will be saved after successful order creation)
+      // Store coupon reference to update later
+      req.appliedCoupon = coupon;
+    }
+
+    // Calculate final total with discount
+    const finalTotal = totalPrice - discountAmount;
+
+    // Calculate admin commission (10% of final total after discount)
+    const adminCommission = (finalTotal * 10) / 100;
+    const sellerAmount = finalTotal - adminCommission;
+
     // Create order
     const order = await Order.create({
       user: req.user._id,
@@ -77,7 +158,10 @@ exports.createOrder = async (req, res) => {
       itemsPrice,
       shippingPrice,
       taxPrice,
-      totalPrice,
+      totalPrice: finalTotal, // Use final total after discount
+      discountAmount,
+      adminCommission,
+      sellerAmount,
       couponCode
     });
 
@@ -106,6 +190,11 @@ exports.createOrder = async (req, res) => {
 
     await order.save();
 
+    // Increment coupon usage if coupon was applied
+    if (req.appliedCoupon) {
+      await req.appliedCoupon.incrementUsage(req.user._id, finalTotal);
+    }
+
     const populatedOrder = await Order.findById(order._id)
       .populate('user', 'name email phone')
       .populate('items.product', 'title images')
@@ -114,7 +203,8 @@ exports.createOrder = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Order created successfully',
-      data: populatedOrder
+      data: populatedOrder,
+      couponApplied: couponApplied // Include coupon details in response
     });
   } catch (error) {
     console.error('Create order error:', error);
@@ -318,6 +408,31 @@ exports.updateOrderStatus = async (req, res) => {
     if (status === 'Delivered') {
       order.deliveredAt = Date.now();
       order.paymentInfo.paymentStatus = 'Completed';
+
+      // Update seller earnings when order is delivered
+      // Group items by seller
+      const sellerEarnings = {};
+      order.items.forEach(item => {
+        const sellerId = item.seller.toString();
+        const itemTotal = item.price * item.quantity;
+        
+        if (!sellerEarnings[sellerId]) {
+          sellerEarnings[sellerId] = 0;
+        }
+        sellerEarnings[sellerId] += itemTotal;
+      });
+
+      // Update each seller's earnings (90% after 10% commission)
+      for (const [sellerId, itemsTotal] of Object.entries(sellerEarnings)) {
+        const sellerAmount = itemsTotal * 0.9; // 90% to seller, 10% commission
+
+        await User.findByIdAndUpdate(sellerId, {
+          $inc: {
+            totalEarnings: sellerAmount,
+            availableBalance: sellerAmount
+          }
+        });
+      }
     }
 
     order.orderStatusHistory.push({

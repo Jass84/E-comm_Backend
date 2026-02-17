@@ -208,13 +208,51 @@ curl -X GET http://localhost:5000/api/auth/me \
 3. Login to get the token
 4. Use the token in Authorization header for protected routes
 
-## 🔄 Next Steps (Upcoming Phases)
+## 🔄 Development Phases
 
-- Phase 2: Product System
-- Phase 3: Order System
-- Phase 4: Payment Integration (Razorpay)
-- Phase 5: Admin & Seller Panels
-- Phase 6: Coupon & Commission System
+### Completed Phases
+
+- ✅ **Phase 1:** Project Setup & Authentication System
+- ✅ **Phase 2:** Product System (CRUD, Categories, Image Upload)
+- ✅ **Phase 3:** Order System (Cart, Checkout, Order Management)
+- ✅ **Phase 4:** Payment Integration (Razorpay COD & Online)
+- ✅ **Phase 5:** Admin Commission System (10% auto calculation)
+- ✅ **Phase 6:** Coupon System (Percentage & Fixed Discounts)
+
+### Upcoming Phases
+
+- 🔜 **Phase 7:** Enhanced Admin & Seller Dashboards
+- 🔜 **Phase 8:** Advanced Reporting & Analytics
+- 🔜 **Phase 9:** Customer Reviews & Ratings
+
+## 📚 Phase 6 Documentation
+
+**Coupon System** - Complete discount management with validation:
+
+- **Discount Types:** Percentage (10%, 20%) or Fixed (₹100, ₹250)
+- **Controls:** Expiry, usage limits, minimum order, max discount
+- **Validation:** Real-time checking at checkout
+- **Integration:** Automatic discount application
+
+**Example:** Use SAVE10 on ₹1000 order → Get ₹100 off → Pay ₹900
+
+📖 See [PHASE6_DOCUMENTATION.md](PHASE6_DOCUMENTATION.md) for details
+📝 See [PHASE6_SUMMARY.md](PHASE6_SUMMARY.md) for quick overview
+🧪 See [test-phase6.http](test-phase6.http) for testing
+
+## 📚 Phase 5 Documentation
+
+**Admin Commission System** - Automatically calculates and stores commission for every order:
+
+- **Admin Commission:** 10% of total order price
+- **Seller Amount:** 90% of total order price
+- **Formula:** `adminCommission = totalPrice × 10/100`
+
+**Example:** ₹1000 order → Admin: ₹100, Seller: ₹900
+
+📖 See [PHASE5_DOCUMENTATION.md](PHASE5_DOCUMENTATION.md) for details
+📝 See [PHASE5_SUMMARY.md](PHASE5_SUMMARY.md) for quick overview
+🧪 See [test-phase5.http](test-phase5.http) for testing
 
 ## 🐛 Error Handling
 

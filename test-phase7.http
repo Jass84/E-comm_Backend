@@ -1,0 +1,421 @@
+### Phase 7: Seller Dashboard - API Tests
+
+# Variables (Update these with actual values)
+@baseUrl = http://localhost:5002/api
+@sellerToken = YOUR_SELLER_TOKEN_HERE
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@productId = YOUR_PRODUCT_ID_HERE
+@orderId = YOUR_ORDER_ID_HERE
+@withdrawalId = YOUR_WITHDRAWAL_ID_HERE
+
+### ============================================================
+### SELLER PROFILE MANAGEMENT
+### ============================================================
+
+### 1. Get Seller Profile
+GET {{baseUrl}}/seller/profile
+Authorization: Bearer {{sellerToken}}
+
+### 2. Update Seller Profile
+PUT {{baseUrl}}/seller/profile
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "name": "Tech Store Owner",
+  "phone": "+919876543210",
+  "storeName": "Tech Gadgets Store",
+  "storeDescription": "Best electronic gadgets at affordable prices. We specialize in smartphones, laptops, and accessories.",
+  "gstNumber": "29ABCDE1234F1Z5",
+  "bankDetails": {
+    "accountNumber": "1234567890",
+    "ifscCode": "SBIN0001234",
+    "accountHolderName": "Tech Store Owner",
+    "bankName": "State Bank of India"
+  }
+}
+
+### ============================================================
+### SELLER DASHBOARD
+### ============================================================
+
+### 3. Get Dashboard Stats
+GET {{baseUrl}}/seller/dashboard
+Authorization: Bearer {{sellerToken}}
+
+###
+# Response includes:
+# - Total products, active, out of stock
+# - Total orders, pending, completed
+# - Earnings: total, available, pending, withdrawn
+# - Recent orders
+
+### ============================================================
+### PRODUCT MANAGEMENT
+### ============================================================
+
+### 4. Get All Seller Products
+GET {{baseUrl}}/seller/products
+Authorization: Bearer {{sellerToken}}
+
+### 5. Get Products with Pagination
+GET {{baseUrl}}/seller/products?page=1&limit=5
+Authorization: Bearer {{sellerToken}}
+
+### 6. Search Products
+GET {{baseUrl}}/seller/products?search=laptop
+Authorization: Bearer {{sellerToken}}
+
+### 7. Filter by Stock Status - In Stock
+GET {{baseUrl}}/seller/products?stock=in
+Authorization: Bearer {{sellerToken}}
+
+### 8. Filter by Stock Status - Out of Stock
+GET {{baseUrl}}/seller/products?stock=out
+Authorization: Bearer {{sellerToken}}
+
+### ============================================================
+### ORDER MANAGEMENT
+### ============================================================
+
+### 9. Get All Seller Orders
+GET {{baseUrl}}/seller/orders
+Authorization: Bearer {{sellerToken}}
+
+### 10. Get Orders with Pagination
+GET {{baseUrl}}/seller/orders?page=1&limit=10
+Authorization: Bearer {{sellerToken}}
+
+### 11. Filter Orders by Status - Pending
+GET {{baseUrl}}/seller/orders?status=pending
+Authorization: Bearer {{sellerToken}}
+
+### 12. Filter Orders by Status - Delivered
+GET {{baseUrl}}/seller/orders?status=delivered
+Authorization: Bearer {{sellerToken}}
+
+### 13. Update Order Status to Shipped
+PUT {{baseUrl}}/seller/orders/{{orderId}}/status
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "status": "shipped"
+}
+
+### 14. Cancel Order
+PUT {{baseUrl}}/seller/orders/{{orderId}}/status
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "status": "cancelled"
+}
+
+### ============================================================
+### EARNINGS & ANALYTICS
+### ============================================================
+
+### 15. Get Earnings Summary
+GET {{baseUrl}}/seller/earnings
+Authorization: Bearer {{sellerToken}}
+
+###
+# Response includes:
+# - Total earnings
+# - Available balance (can withdraw)
+# - Pending balance (orders not delivered)
+# - Total withdrawn
+# - Monthly earnings
+# - Last 7 days chart data
+
+### ============================================================
+### WITHDRAWAL MANAGEMENT
+### ============================================================
+
+### 16. Request Withdrawal - ₹500
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 500
+}
+
+### 17. Request Withdrawal - ₹1000
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 1000
+}
+
+### 18. Request Withdrawal - Invalid (Less than minimum)
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 50
+}
+
+###
+# Should fail: Minimum withdrawal is ₹100
+
+### 19. Request Withdrawal - Insufficient Balance
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 999999
+}
+
+###
+# Should fail: Insufficient balance
+
+### 20. Get Withdrawal History
+GET {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+
+### 21. Get Pending Withdrawals
+GET {{baseUrl}}/seller/withdrawals?status=pending
+Authorization: Bearer {{sellerToken}}
+
+### 22. Get Completed Withdrawals
+GET {{baseUrl}}/seller/withdrawals?status=completed
+Authorization: Bearer {{sellerToken}}
+
+### ============================================================
+### ADMIN - WITHDRAWAL MANAGEMENT
+### ============================================================
+
+### 23. Admin - Get All Withdrawals
+GET {{baseUrl}}/admin/withdrawals
+Authorization: Bearer {{adminToken}}
+
+### 24. Admin - Get Pending Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=pending
+Authorization: Bearer {{adminToken}}
+
+### 25. Admin - Approve Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "adminNote": "Withdrawal approved. Payment will be processed within 24 hours."
+}
+
+### 26. Admin - Complete Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "completed",
+  "transactionId": "TXN20260217123456",
+  "adminNote": "Payment transferred successfully"
+}
+
+### 27. Admin - Reject Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "rejected",
+  "adminNote": "Invalid bank details. Please update and resubmit."
+}
+
+### ============================================================
+### ADMIN - SELLER MANAGEMENT
+### ============================================================
+
+### 28. Admin - Get Pending Sellers
+GET {{baseUrl}}/admin/sellers/pending
+Authorization: Bearer {{adminToken}}
+
+### 29. Admin - Approve Seller
+PUT {{baseUrl}}/admin/sellers/65f1234567890abcdef12345/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "approved": true
+}
+
+### 30. Admin - Reject Seller
+PUT {{baseUrl}}/admin/sellers/65f1234567890abcdef12345/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "approved": false
+}
+
+### ============================================================
+### ADMIN - DASHBOARD
+### ============================================================
+
+### 31. Admin - Get Dashboard Stats
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer {{adminToken}}
+
+###
+# Response includes:
+# - Total users, sellers, pending sellers
+# - Total products
+# - Total orders, pending orders
+# - Total revenue & commission
+# - Pending withdrawals
+
+### ============================================================
+### ERROR CASES
+### ============================================================
+
+### 32. Get Profile - No Auth Token (Should Fail)
+GET {{baseUrl}}/seller/profile
+
+### 33. Request Withdrawal - No Bank Details (Should Fail)
+# First remove bank details from profile, then:
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 500
+}
+
+### 34. Request Multiple Withdrawals (Should Fail)
+# Try requesting withdrawal when one is already pending
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 300
+}
+
+### 35. Update Other Seller's Order (Should Fail)
+# Try to update an order that doesn't belong to this seller
+PUT {{baseUrl}}/seller/orders/OTHER_SELLER_ORDER_ID/status
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "status": "shipped"
+}
+
+### ============================================================
+### COMPLETE WORKFLOW TEST
+### ============================================================
+
+### WORKFLOW: Complete Seller Dashboard Flow
+###
+### Step 1: Login as Seller
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "seller@test.com",
+  "password": "password123"
+}
+
+### Step 2: Get Dashboard (should show 0 earnings initially)
+GET {{baseUrl}}/seller/dashboard
+Authorization: Bearer {{sellerToken}}
+
+### Step 3: Add/Update Bank Details
+PUT {{baseUrl}}/seller/profile
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "bankDetails": {
+    "accountNumber": "9876543210",
+    "ifscCode": "HDFC0001234",
+    "accountHolderName": "Seller Name",
+    "bankName": "HDFC Bank"
+  }
+}
+
+### Step 4: Customer places order with seller's products
+# (This would be done from customer account)
+
+### Step 5: Seller marks order as shipped
+PUT {{baseUrl}}/seller/orders/{{orderId}}/status
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "status": "shipped"
+}
+
+### Step 6: Admin marks order as delivered
+# (Earnings automatically added to seller's available balance)
+
+### Step 7: Check updated earnings
+GET {{baseUrl}}/seller/earnings
+Authorization: Bearer {{sellerToken}}
+
+### Step 8: Request withdrawal
+POST {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+Content-Type: application/json
+
+{
+  "amount": 500
+}
+
+### Step 9: Admin approves withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "adminNote": "Approved for payment processing"
+}
+
+### Step 10: Admin marks as completed
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "completed",
+  "transactionId": "TXN123456789",
+  "adminNote": "Payment transferred successfully"
+}
+
+### Step 11: Verify withdrawal in history
+GET {{baseUrl}}/seller/withdrawals
+Authorization: Bearer {{sellerToken}}
+
+### ============================================================
+### NOTES
+### ============================================================
+
+# To test complete flow:
+# 1. Create seller account and get approved by admin
+# 2. Add products to store
+# 3. Create order with seller's products (as customer)
+# 4. Admin marks order as delivered (triggers earnings)
+# 5. Seller can now request withdrawal
+# 6. Admin processes withdrawal request
+# 7. Funds transferred to seller's bank account
+
+# Earnings Calculation:
+# - Order Total: ₹1000
+# - Admin Commission (10%): ₹100
+# - Seller Amount (90%): ₹900
+# - When order delivered → ₹900 added to seller's available balance
+
+# Withdrawal Rules:
+# - Minimum amount: ₹100
+# - Bank details must be added
+# - Only one pending withdrawal at a time
+# - Admin must approve/reject

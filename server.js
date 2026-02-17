@@ -31,6 +31,8 @@ app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/seller', require('./routes/sellerRoutes'));
+app.use('/api/seller', require('./routes/withdrawalRoutes')); // Phase 9: Seller withdrawal routes
+app.use('/api/admin', require('./routes/adminWithdrawalRoutes')); // Phase 9: Admin withdrawal routes
 
 // Test route
 app.get('/', (req, res) => {

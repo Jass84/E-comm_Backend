@@ -1,0 +1,271 @@
+### PHASE 5 - ADMIN COMMISSION SYSTEM TESTS
+### Test admin commission (10%) and seller amount calculation
+
+### Variables
+@baseUrl = http://localhost:5000/api
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@userToken = YOUR_USER_TOKEN_HERE
+@sellerToken = YOUR_SELLER_TOKEN_HERE
+
+###############################################################
+### SETUP - Login to get tokens
+###############################################################
+
+### 1. Admin Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ecommerce.com",
+  "password": "admin123"
+}
+
+###
+
+### 2. User Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "buyer@example.com",
+  "password": "buyer123"
+}
+
+###
+
+### 3. Seller Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "seller@example.com",
+  "password": "seller123"
+}
+
+###
+
+###############################################################
+### CREATE ORDER - Test Commission Calculation
+###############################################################
+
+### 4. Create Order (₹1000 total)
+# Expected:
+# - Total Price: ₹1000
+# - Admin Commission (10%): ₹100
+# - Seller Amount: ₹900
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test Buyer",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 900,
+  "shippingPrice": 50,
+  "taxPrice": 50,
+  "totalPrice": 1000
+}
+
+###
+
+### 5. Create Order (₹2500 total)
+# Expected:
+# - Total Price: ₹2500
+# - Admin Commission (10%): ₹250
+# - Seller Amount: ₹2250
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 2
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test Buyer",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 2300,
+  "shippingPrice": 100,
+  "taxPrice": 100,
+  "totalPrice": 2500
+}
+
+###
+
+### 6. Create Order (₹500 total)
+# Expected:
+# - Total Price: ₹500
+# - Admin Commission (10%): ₹50
+# - Seller Amount: ₹450
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test Buyer",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "Online",
+  "itemsPrice": 450,
+  "shippingPrice": 25,
+  "taxPrice": 25,
+  "totalPrice": 500
+}
+
+###
+
+###############################################################
+### VERIFY COMMISSION CALCULATIONS
+###############################################################
+
+### 7. Get Order by ID
+# Check response for:
+# - adminCommission field
+# - sellerAmount field
+# - Verify: sellerAmount = totalPrice - adminCommission
+GET {{baseUrl}}/orders/REPLACE_WITH_ORDER_ID
+Authorization: Bearer {{userToken}}
+
+###
+
+### 8. Get All Orders (Admin)
+# Verify all orders have commission fields
+GET {{baseUrl}}/orders
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 9. Get User Orders
+# Check commission details in user's orders
+GET {{baseUrl}}/orders/my-orders
+Authorization: Bearer {{userToken}}
+
+###
+
+### 10. Get Seller Orders
+# Verify seller can see their amount after commission
+GET {{baseUrl}}/orders/seller-orders
+Authorization: Bearer {{sellerToken}}
+
+###
+
+###############################################################
+### COMMISSION CALCULATION EXAMPLES
+###############################################################
+
+# Example 1: ₹1000 Order
+# Total Price: ₹1000
+# Admin Commission: ₹1000 × 10/100 = ₹100
+# Seller Amount: ₹1000 - ₹100 = ₹900
+
+# Example 2: ₹2500 Order
+# Total Price: ₹2500
+# Admin Commission: ₹2500 × 10/100 = ₹250
+# Seller Amount: ₹2500 - ₹250 = ₹2250
+
+# Example 3: ₹500 Order
+# Total Price: ₹500
+# Admin Commission: ₹500 × 10/100 = ₹50
+# Seller Amount: ₹500 - ₹50 = ₹450
+
+###############################################################
+### EDGE CASES
+###############################################################
+
+### 11. Small Order (₹100)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test Buyer",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 85,
+  "shippingPrice": 10,
+  "taxPrice": 5,
+  "totalPrice": 100
+}
+# Expected Commission: ₹10, Seller Amount: ₹90
+
+###
+
+### 12. Large Order (₹10000)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 10
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test Buyer",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "Online",
+  "itemsPrice": 9200,
+  "shippingPrice": 400,
+  "taxPrice": 400,
+  "totalPrice": 10000
+}
+# Expected Commission: ₹1000, Seller Amount: ₹9000
+
+###

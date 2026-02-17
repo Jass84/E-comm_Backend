@@ -1,0 +1,610 @@
+### Phase 8: Admin Dashboard - API Tests
+
+# Variables (Update these with actual values)
+@baseUrl = http://localhost:5002/api
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@userId = YOUR_USER_ID_HERE
+@sellerId = YOUR_SELLER_ID_HERE
+@orderId = YOUR_ORDER_ID_HERE
+@productId = YOUR_PRODUCT_ID_HERE
+@withdrawalId = YOUR_WITHDRAWAL_ID_HERE
+
+### ============================================================
+### ADMIN DASHBOARD
+### ============================================================
+
+### 1. Get Comprehensive Dashboard Stats
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer {{adminToken}}
+
+###
+# Response includes:
+# - Total users, sellers, products
+# - Orders (total, today, by status)
+# - Revenue (total, today, monthly, commission)
+# - Withdrawals pending
+# - Active coupons
+# - Last 7 days revenue chart
+# - Recent orders
+
+### ============================================================
+### USER MANAGEMENT
+### ============================================================
+
+### 2. Get All Users
+GET {{baseUrl}}/admin/users
+Authorization: Bearer {{adminToken}}
+
+### 3. Get Users with Pagination
+GET {{baseUrl}}/admin/users?page=1&limit=10
+Authorization: Bearer {{adminToken}}
+
+### 4. Filter Users by Role - Regular Users
+GET {{baseUrl}}/admin/users?role=user
+Authorization: Bearer {{adminToken}}
+
+### 5. Filter Users by Role - Sellers
+GET {{baseUrl}}/admin/users?role=seller
+Authorization: Bearer {{adminToken}}
+
+### 6. Filter Users by Role - Admins
+GET {{baseUrl}}/admin/users?role=admin
+Authorization: Bearer {{adminToken}}
+
+### 7. Get Approved Sellers
+GET {{baseUrl}}/admin/users?role=seller&sellerApproved=true
+Authorization: Bearer {{adminToken}}
+
+### 8. Get Pending Sellers
+GET {{baseUrl}}/admin/users?role=seller&sellerApproved=false
+Authorization: Bearer {{adminToken}}
+
+### 9. Search Users
+GET {{baseUrl}}/admin/users?search=john
+Authorization: Bearer {{adminToken}}
+
+### 10. Get Single User Details
+GET {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+
+###
+# Response includes user details + recent orders + recent products (if seller)
+
+### 11. Update User
+PUT {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "email": "updated@test.com",
+  "isActive": true
+}
+
+### 12. Block/Unblock User
+PUT {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+### 13. Update User Role
+PUT {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "role": "seller"
+}
+
+### 14. Delete User
+DELETE {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+
+###
+# Note: Cannot delete admin users
+
+### ============================================================
+### SELLER MANAGEMENT
+### ============================================================
+
+### 15. Get Pending Seller Approvals
+GET {{baseUrl}}/admin/sellers/pending
+Authorization: Bearer {{adminToken}}
+
+### 16. Approve Seller
+PUT {{baseUrl}}/admin/sellers/{{sellerId}}/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "approved": true
+}
+
+### 17. Reject Seller
+PUT {{baseUrl}}/admin/sellers/{{sellerId}}/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "approved": false
+}
+
+### ============================================================
+### ORDER MANAGEMENT
+### ============================================================
+
+### 18. Get All Orders
+GET {{baseUrl}}/admin/orders
+Authorization: Bearer {{adminToken}}
+
+### 19. Get Orders with Pagination
+GET {{baseUrl}}/admin/orders?page=1&limit=10
+Authorization: Bearer {{adminToken}}
+
+### 20. Filter Orders by Status - Pending
+GET {{baseUrl}}/admin/orders?status=pending
+Authorization: Bearer {{adminToken}}
+
+### 21. Filter Orders by Status - Processing
+GET {{baseUrl}}/admin/orders?status=processing
+Authorization: Bearer {{adminToken}}
+
+### 22. Filter Orders by Status - Shipped
+GET {{baseUrl}}/admin/orders?status=shipped
+Authorization: Bearer {{adminToken}}
+
+### 23. Filter Orders by Status - Delivered
+GET {{baseUrl}}/admin/orders?status=delivered
+Authorization: Bearer {{adminToken}}
+
+### 24. Filter Orders by Status - Cancelled
+GET {{baseUrl}}/admin/orders?status=cancelled
+Authorization: Bearer {{adminToken}}
+
+### 25. Filter Orders by Payment Method - COD
+GET {{baseUrl}}/admin/orders?paymentMethod=COD
+Authorization: Bearer {{adminToken}}
+
+### 26. Filter Orders by Payment Method - Online
+GET {{baseUrl}}/admin/orders?paymentMethod=Online
+Authorization: Bearer {{adminToken}}
+
+### 27. Filter Orders by Date Range
+GET {{baseUrl}}/admin/orders?startDate=2026-02-01&endDate=2026-02-28
+Authorization: Bearer {{adminToken}}
+
+### 28. Get Single Order Details
+GET {{baseUrl}}/admin/orders/{{orderId}}
+Authorization: Bearer {{adminToken}}
+
+### 29. Update Order Status to Processing
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "processing",
+  "comment": "Order is being processed"
+}
+
+### 30. Update Order Status to Shipped
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "shipped",
+  "comment": "Order shipped via courier"
+}
+
+### 31. Update Order Status to Delivered
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "delivered",
+  "comment": "Order delivered successfully"
+}
+
+###
+# Note: When marked delivered, seller earnings are automatically credited
+
+### 32. Cancel Order
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "cancelled",
+  "comment": "Cancelled by admin - out of stock"
+}
+
+### ============================================================
+### PRODUCT MANAGEMENT
+### ============================================================
+
+### 33. Get All Products
+GET {{baseUrl}}/admin/products
+Authorization: Bearer {{adminToken}}
+
+### 34. Get Products with Pagination
+GET {{baseUrl}}/admin/products?page=1&limit=10
+Authorization: Bearer {{adminToken}}
+
+### 35. Filter Products - Active
+GET {{baseUrl}}/admin/products?isActive=true
+Authorization: Bearer {{adminToken}}
+
+### 36. Filter Products - Inactive
+GET {{baseUrl}}/admin/products?isActive=false
+Authorization: Bearer {{adminToken}}
+
+### 37. Filter Products - Out of Stock
+GET {{baseUrl}}/admin/products?stock=out
+Authorization: Bearer {{adminToken}}
+
+### 38. Filter Products - Low Stock
+GET {{baseUrl}}/admin/products?stock=low
+Authorization: Bearer {{adminToken}}
+
+### 39. Search Products
+GET {{baseUrl}}/admin/products?search=laptop
+Authorization: Bearer {{adminToken}}
+
+### 40. Filter Products by Seller
+GET {{baseUrl}}/admin/products?seller={{sellerId}}
+Authorization: Bearer {{adminToken}}
+
+### 41. Update Product
+PUT {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Updated Product Title",
+  "price": 29999,
+  "stock": 50,
+  "isActive": true
+}
+
+### 42. Deactivate Product
+PUT {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+### 43. Update Product Stock
+PUT {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "stock": 100
+}
+
+### 44. Delete Product
+DELETE {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### WITHDRAWAL MANAGEMENT
+### ============================================================
+
+### 45. Get All Withdrawals
+GET {{baseUrl}}/admin/withdrawals
+Authorization: Bearer {{adminToken}}
+
+### 46. Get Pending Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=pending
+Authorization: Bearer {{adminToken}}
+
+### 47. Get Approved Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=approved
+Authorization: Bearer {{adminToken}}
+
+### 48. Get Completed Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=completed
+Authorization: Bearer {{adminToken}}
+
+### 49. Get Rejected Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=rejected
+Authorization: Bearer {{adminToken}}
+
+### 50. Approve Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "adminNote": "Withdrawal approved. Processing payment."
+}
+
+### 51. Complete Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "completed",
+  "transactionId": "TXN20260217123456",
+  "adminNote": "Payment transferred successfully"
+}
+
+### 52. Reject Withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "rejected",
+  "adminNote": "Invalid bank details. Please update."
+}
+
+### ============================================================
+### ANALYTICS & REPORTS
+### ============================================================
+
+### 53. Get Revenue Analytics - Last Week
+GET {{baseUrl}}/admin/analytics/revenue?period=week
+Authorization: Bearer {{adminToken}}
+
+### 54. Get Revenue Analytics - Last Month
+GET {{baseUrl}}/admin/analytics/revenue?period=month
+Authorization: Bearer {{adminToken}}
+
+### 55. Get Revenue Analytics - Last Year
+GET {{baseUrl}}/admin/analytics/revenue?period=year
+Authorization: Bearer {{adminToken}}
+
+### 56. Get Top 10 Selling Products
+GET {{baseUrl}}/admin/analytics/top-products?limit=10
+Authorization: Bearer {{adminToken}}
+
+### 57. Get Top 5 Selling Products
+GET {{baseUrl}}/admin/analytics/top-products?limit=5
+Authorization: Bearer {{adminToken}}
+
+### 58. Get Top 10 Sellers
+GET {{baseUrl}}/admin/analytics/top-sellers?limit=10
+Authorization: Bearer {{adminToken}}
+
+### 59. Get Top 5 Sellers
+GET {{baseUrl}}/admin/analytics/top-sellers?limit=5
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### DASHBOARD WORKFLOW TEST
+### ============================================================
+
+### WORKFLOW: Complete Admin Dashboard Flow
+
+### Step 1: Login as Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "admin123"
+}
+
+### Step 2: View Dashboard
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer {{adminToken}}
+
+###
+# Dashboard shows:
+# - 1500 total users
+# - 250 sellers (10 pending approval)
+# - 5000 products
+# - 12000 orders (150 pending)
+# - ₹5M total revenue (₹500K commission)
+# - 25 pending withdrawals
+# - Last 7 days chart
+
+### Step 3: Approve Pending Sellers
+# View pending sellers
+GET {{baseUrl}}/admin/sellers/pending
+Authorization: Bearer {{adminToken}}
+
+# Approve a seller
+PUT {{baseUrl}}/admin/sellers/{{sellerId}}/approve
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "approved": true
+}
+
+### Step 4: Manage Orders
+# View all pending orders
+GET {{baseUrl}}/admin/orders?status=pending
+Authorization: Bearer {{adminToken}}
+
+# Process an order
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "processing"
+}
+
+# Ship the order
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "shipped"
+}
+
+# Mark as delivered (credits seller earnings)
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "delivered"
+}
+
+### Step 5: Handle Withdrawal Requests
+# View pending withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=pending
+Authorization: Bearer {{adminToken}}
+
+# Approve withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "approved"
+}
+
+# Complete withdrawal
+PUT {{baseUrl}}/admin/withdrawals/{{withdrawalId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "completed",
+  "transactionId": "TXN123456"
+}
+
+### Step 6: Manage Products
+# View out of stock products
+GET {{baseUrl}}/admin/products?stock=out
+Authorization: Bearer {{adminToken}}
+
+# Update product stock
+PUT {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "stock": 50
+}
+
+# Deactivate problematic product
+PUT {{baseUrl}}/admin/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+### Step 7: Monitor Users
+# View all users
+GET {{baseUrl}}/admin/users
+Authorization: Bearer {{adminToken}}
+
+# Block suspicious user
+PUT {{baseUrl}}/admin/users/{{userId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+### Step 8: View Analytics
+# Revenue trends
+GET {{baseUrl}}/admin/analytics/revenue?period=month
+Authorization: Bearer {{adminToken}}
+
+# Top products
+GET {{baseUrl}}/admin/analytics/top-products?limit=10
+Authorization: Bearer {{adminToken}}
+
+# Top sellers
+GET {{baseUrl}}/admin/analytics/top-sellers?limit=10
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### ERROR CASES
+### ============================================================
+
+### 60. Access Dashboard Without Admin Role (Should Fail)
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer <NON_ADMIN_TOKEN>
+
+### 61. Delete Admin User (Should Fail)
+DELETE {{baseUrl}}/admin/users/<ADMIN_USER_ID>
+Authorization: Bearer {{adminToken}}
+
+### 62. Invalid Order Status (Should Fail)
+PUT {{baseUrl}}/admin/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "invalid_status"
+}
+
+### 63. Update Non-Existent Product (Should Fail)
+PUT {{baseUrl}}/admin/products/invalid_id
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "price": 100
+}
+
+### ============================================================
+### BULK OPERATIONS TEST
+### ============================================================
+
+### 64. Process Multiple Pending Orders
+# Use this to process several orders at once
+GET {{baseUrl}}/admin/orders?status=pending&limit=5
+Authorization: Bearer {{adminToken}}
+
+### 65. Approve Multiple Sellers
+GET {{baseUrl}}/admin/sellers/pending
+Authorization: Bearer {{adminToken}}
+
+### 66. Process Multiple Withdrawals
+GET {{baseUrl}}/admin/withdrawals?status=pending&limit=10
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### NOTES
+### ============================================================
+
+# Admin Dashboard Features:
+# ✅ Comprehensive dashboard with stats
+# ✅ User management (view, update, delete)
+# ✅ Seller approval system
+# ✅ Order management (view all, update status)
+# ✅ Product management (view all, update, delete)
+# ✅ Withdrawal approval workflow
+# ✅ Revenue analytics with charts
+# ✅ Top products reporting
+# ✅ Top sellers reporting
+
+# Key Metrics Tracked:
+# - Total sales
+# - Total users (by role)
+# - Revenue chart (last 7 days)
+# - Orders today
+# - Commission earned
+# - Pending approvals
+
+# Admin Powers:
+# ✅ Full control over all users
+# ✅ Approve/reject sellers
+# ✅ Manage all orders
+# ✅ Manage all products
+# ✅ Approve withdrawals
+# ✅ View complete analytics
+# ✅ Track platform revenue
+# ✅ Monitor top performers

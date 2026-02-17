@@ -111,6 +111,16 @@ const orderSchema = new mongoose.Schema({
     required: true,
     default: 0.0
   },
+  adminCommission: {
+    type: Number,
+    default: 0.0,
+    comment: 'Admin commission (10% of total price)'
+  },
+  sellerAmount: {
+    type: Number,
+    default: 0.0,
+    comment: 'Amount seller receives (total - commission)'
+  },
   couponCode: {
     type: String
   },

@@ -1,0 +1,439 @@
+### PHASE 6 - COUPON SYSTEM TESTS
+### Test coupon creation, validation, and application at checkout
+
+### Variables
+@baseUrl = http://localhost:5000/api
+@adminToken = YOUR_ADMIN_TOKEN_HERE
+@userToken = YOUR_USER_TOKEN_HERE
+
+###############################################################
+### SETUP - Login to get tokens
+###############################################################
+
+### 1. Admin Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ecommerce.com",
+  "password": "admin123"
+}
+
+###
+
+### 2. User Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "buyer@example.com",
+  "password": "buyer123"
+}
+
+###
+
+###############################################################
+### ADMIN - CREATE COUPONS
+###############################################################
+
+### 3. Create Percentage Coupon (10% off)
+POST {{baseUrl}}/coupons
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "SAVE10",
+  "description": "Get 10% off on your order",
+  "discountType": "percentage",
+  "discountValue": 10,
+  "minimumOrderAmount": 500,
+  "maximumDiscount": 200,
+  "expiryDate": "2026-12-31",
+  "usageLimit": 100,
+  "usageLimitPerUser": 1
+}
+
+###
+
+### 4. Create Percentage Coupon (20% off)
+POST {{baseUrl}}/coupons
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "SAVE20",
+  "description": "Get 20% off - Limited time",
+  "discountType": "percentage",
+  "discountValue": 20,
+  "minimumOrderAmount": 1000,
+  "maximumDiscount": 500,
+  "expiryDate": "2026-06-30",
+  "usageLimit": 50,
+  "usageLimitPerUser": 1
+}
+
+###
+
+### 5. Create Fixed Discount Coupon (₹100 off)
+POST {{baseUrl}}/coupons
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "FLAT100",
+  "description": "Flat ₹100 off on orders above ₹500",
+  "discountType": "fixed",
+  "discountValue": 100,
+  "minimumOrderAmount": 500,
+  "expiryDate": "2026-12-31",
+  "usageLimit": 200,
+  "usageLimitPerUser": 2
+}
+
+###
+
+### 6. Create Fixed Discount Coupon (₹250 off)
+POST {{baseUrl}}/coupons
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "MEGA250",
+  "description": "Mega savings - ₹250 off",
+  "discountType": "fixed",
+  "discountValue": 250,
+  "minimumOrderAmount": 2000,
+  "expiryDate": "2026-08-31",
+  "usageLimit": null,
+  "usageLimitPerUser": 3
+}
+
+###
+
+### 7. Create Welcome Coupon (15% off, no minimum)
+POST {{baseUrl}}/coupons
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "code": "WELCOME15",
+  "description": "Welcome bonus - 15% off your first order",
+  "discountType": "percentage",
+  "discountValue": 15,
+  "minimumOrderAmount": 0,
+  "maximumDiscount": 300,
+  "expiryDate": "2026-12-31",
+  "usageLimit": 500,
+  "usageLimitPerUser": 1
+}
+
+###
+
+###############################################################
+### ADMIN - VIEW COUPONS
+###############################################################
+
+### 8. Get All Coupons
+GET {{baseUrl}}/coupons
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 9. Get Active Coupons Only
+GET {{baseUrl}}/coupons?isActive=true
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 10. Search Coupon by Code
+GET {{baseUrl}}/coupons?search=SAVE
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 11. Filter by Discount Type (percentage)
+GET {{baseUrl}}/coupons?discountType=percentage
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 12. Get Single Coupon (replace with actual ID)
+GET {{baseUrl}}/coupons/COUPON_ID_HERE
+Authorization: Bearer {{adminToken}}
+
+###
+
+###############################################################
+### ADMIN - UPDATE COUPONS
+###############################################################
+
+### 13. Update Coupon (replace with actual ID)
+PUT {{baseUrl}}/coupons/COUPON_ID_HERE
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "discountValue": 25,
+  "description": "Updated - Get 25% off!",
+  "usageLimit": 75
+}
+
+###
+
+### 14. Deactivate Coupon (replace with actual ID)
+PUT {{baseUrl}}/coupons/COUPON_ID_HERE
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "isActive": false
+}
+
+###
+
+###############################################################
+### ADMIN - COUPON STATISTICS
+###############################################################
+
+### 15. Get Coupon Usage Statistics (replace with actual ID)
+GET {{baseUrl}}/coupons/COUPON_ID_HERE/stats
+Authorization: Bearer {{adminToken}}
+
+###
+
+###############################################################
+### USER - VIEW AVAILABLE COUPONS
+###############################################################
+
+### 16. Get Active Coupons (User View)
+GET {{baseUrl}}/coupons/active
+Authorization: Bearer {{userToken}}
+
+###
+
+###############################################################
+### USER - VALIDATE COUPONS
+###############################################################
+
+### 17. Validate SAVE10 Coupon (₹1000 order)
+# Expected: 10% off = ₹100 discount
+POST {{baseUrl}}/coupons/validate
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "code": "SAVE10",
+  "orderAmount": 1000
+}
+
+###
+
+### 18. Validate FLAT100 Coupon (₹600 order)
+# Expected: Flat ₹100 discount
+POST {{baseUrl}}/coupons/validate
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "code": "FLAT100",
+  "orderAmount": 600
+}
+
+###
+
+### 19. Validate with Insufficient Amount
+# Expected: Error - Minimum order not met
+POST {{baseUrl}}/coupons/validate
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "code": "SAVE10",
+  "orderAmount": 300
+}
+
+###
+
+### 20. Validate Invalid Coupon
+# Expected: Error - Invalid coupon code
+POST {{baseUrl}}/coupons/validate
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "code": "INVALID123",
+  "orderAmount": 1000
+}
+
+###
+
+###############################################################
+### USER - CREATE ORDER WITH COUPON
+###############################################################
+
+### 21. Create Order with SAVE10 Coupon
+# Order: ₹1000, Discount: ₹100, Final: ₹900
+# Commission on ₹900: Admin ₹90, Seller ₹810
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test User",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 900,
+  "shippingPrice": 50,
+  "taxPrice": 50,
+  "totalPrice": 1000,
+  "couponCode": "SAVE10"
+}
+
+###
+
+### 22. Create Order with FLAT100 Coupon
+# Order: ₹1500, Discount: ₹100, Final: ₹1400
+# Commission on ₹1400: Admin ₹140, Seller ₹1260
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 2
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test User",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001"
+  },
+  "paymentMethod": "Online",
+  "itemsPrice": 1400,
+  "shippingPrice": 50,
+  "taxPrice": 50,
+  "totalPrice": 1500,
+  "couponCode": "FLAT100"
+}
+
+###
+
+### 23. Create Order with WELCOME15 Coupon (₹2000 order)
+# Order: ₹2000, Discount: 15% = ₹300 (capped at max), Final: ₹1700
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 3
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test User",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 1900,
+  "shippingPrice": 50,
+  "taxPrice": 50,
+  "totalPrice": 2000,
+  "couponCode": "WELCOME15"
+}
+
+###
+
+### 24. Try Using Same Coupon Twice (Should Fail)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "items": [
+    {
+      "product": "REPLACE_WITH_PRODUCT_ID",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Test User",
+    "phone": "9876543210",
+    "addressLine1": "123 Test Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 900,
+  "shippingPrice": 50,
+  "taxPrice": 50,
+  "totalPrice": 1000,
+  "couponCode": "SAVE10"
+}
+# Expected: Error - Already used this coupon
+
+###
+
+###############################################################
+### ADMIN - DELETE COUPON
+###############################################################
+
+### 25. Delete Unused Coupon (replace with actual ID)
+DELETE {{baseUrl}}/coupons/COUPON_ID_HERE
+Authorization: Bearer {{adminToken}}
+
+###
+
+### 26. Try Deleting Used Coupon (Should Deactivate)
+DELETE {{baseUrl}}/coupons/COUPON_ID_HERE
+Authorization: Bearer {{adminToken}}
+
+###
+
+###############################################################
+### COUPON CALCULATION EXAMPLES
+###############################################################
+
+# Example 1: SAVE10 on ₹1000
+# Discount Type: Percentage (10%)
+# Order: ₹1000
+# Discount: ₹1000 × 10/100 = ₹100
+# Final: ₹1000 - ₹100 = ₹900
+
+# Example 2: FLAT100 on ₹1500
+# Discount Type: Fixed (₹100)
+# Order: ₹1500
+# Discount: ₹100
+# Final: ₹1500 - ₹100 = ₹1400
+
+# Example 3: SAVE20 on ₹3000 (max ₹500)
+# Discount Type: Percentage (20%)
+# Order: ₹3000
+# Calculated: ₹3000 × 20/100 = ₹600
+# Applied: ₹500 (capped at maximum)
+# Final: ₹3000 - ₹500 = ₹2500
+
+###

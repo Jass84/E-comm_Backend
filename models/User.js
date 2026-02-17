@@ -91,6 +91,27 @@ const userSchema = new mongoose.Schema({
   gstNumber: {
     type: String
   },
+  // Seller earnings fields
+  totalEarnings: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  availableBalance: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  pendingBalance: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  totalWithdrawn: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   // User fields
   addresses: [addressSchema],
   wishlist: [{
