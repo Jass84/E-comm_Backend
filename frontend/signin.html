@@ -360,7 +360,11 @@ body.dark .auth-divider::before, body.dark .auth-divider::after { background: #3
 <div class="toast" id="toast"></div>
 
 <script src="assets/js/main.js" defer></script>
+<script src="assets/js/api.js"></script>
 <script>
+// Redirect if already logged in
+if (API.Session.isLoggedIn()) window.location.href = 'index.html';
+
 // Password toggle
 const togglePw = document.getElementById('togglePw');
 const pwInput  = document.getElementById('password');
@@ -373,20 +377,27 @@ togglePw.addEventListener('click', () => {
     : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
 });
 
-// Form submit
-document.getElementById('signinForm').addEventListener('submit', function(e){
+// Form submit — connected to backend /api/auth/login
+document.getElementById('signinForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const email = document.getElementById('email').value.trim();
   const pass  = document.getElementById('password').value;
   if (!email || !pass) return showToast('Please fill in all fields.');
-  // Simulate success
+
   const btn = this.querySelector('.btn-auth');
   btn.textContent = 'Signing in…';
   btn.disabled = true;
-  setTimeout(() => {
-    showToast('Welcome back! Redirecting…');
+
+  try {
+    const data = await API.Auth.login({ email, password: pass });
+    API.Session.save(data.user, data.token);
+    showToast('Welcome back, ' + (data.user.name || 'User') + '! Redirecting…');
     setTimeout(() => window.location.href = 'index.html', 1200);
-  }, 1000);
+  } catch (err) {
+    showToast(err.message || 'Login failed. Please check your credentials.');
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
 });
 
 function showToast(msg) {

@@ -435,7 +435,11 @@ body.dark .form-terms { color: #999; }
 <div class="toast" id="toast"></div>
 
 <script src="assets/js/main.js" defer></script>
+<script src="assets/js/api.js"></script>
 <script>
+// Redirect if already logged in
+if (API.Session.isLoggedIn()) window.location.href = 'index.html';
+
 // Password toggle
 const togglePw = document.getElementById('togglePw');
 const pwInput  = document.getElementById('password');
@@ -487,10 +491,11 @@ document.getElementById('email').addEventListener('blur', function(){
   }
 });
 
-// Form submit
-document.getElementById('registerForm').addEventListener('submit', function(e){
+// Form submit — connected to backend /api/auth/register
+document.getElementById('registerForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const firstName = document.getElementById('firstName').value.trim();
+  const lastName  = document.getElementById('lastName') ? document.getElementById('lastName').value.trim() : '';
   const email     = document.getElementById('email').value.trim();
   const password  = document.getElementById('password').value;
   const confirmPw = document.getElementById('confirmPw').value;
@@ -498,17 +503,25 @@ document.getElementById('registerForm').addEventListener('submit', function(e){
 
   if (!firstName || !email || !password || !confirmPw) return showToast('Please fill in all required fields.');
   if (password !== confirmPw) return showToast('Passwords do not match.');
-  if (password.length < 8) return showToast('Password must be at least 8 characters.');
+  if (password.length < 6) return showToast('Password must be at least 6 characters.');
   if (!terms) return showToast('Please accept the Terms of Service.');
 
   const btn = document.getElementById('submitBtn');
   btn.textContent = 'Creating account…';
   btn.disabled = true;
 
-  setTimeout(() => {
+  const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+
+  try {
+    const data = await API.Auth.register({ name: fullName, email, password });
+    API.Session.save(data.user, data.token);
     showToast('Account created! Welcome to ClassMora 🎉');
     setTimeout(() => window.location.href = 'index.html', 1400);
-  }, 1000);
+  } catch (err) {
+    showToast(err.message || 'Registration failed. Please try again.');
+    btn.textContent = 'Create My Account';
+    btn.disabled = false;
+  }
 });
 
 function showToast(msg) {

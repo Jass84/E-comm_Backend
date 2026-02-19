@@ -281,6 +281,115 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<script src="assets/js/api.js"></script>
 <script src="assets/js/main.js" defer></script>
+<script>
+// ── Session-aware Navbar ─────────────────────────────
+(function updateNavUser() {
+  const user = API.Session.get();
+  const signinLink = document.querySelector('.signin-link');
+  if (!signinLink) return;
+  if (user) {
+    // Replace Account icon with user initials + dropdown
+    signinLink.title = user.name || 'My Account';
+    signinLink.href = '#';
+    signinLink.innerHTML = `<span style="
+      display:inline-flex;align-items:center;justify-content:center;
+      width:28px;height:28px;border-radius:50%;
+      background:var(--primary,#d81b2a);color:#fff;
+      font-size:12px;font-weight:700;letter-spacing:0;
+    ">${(user.name||'U').charAt(0).toUpperCase()}</span>`;
+    signinLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (confirm('Sign out of ClassMora?')) {
+        try { await API.Auth.logout(); } catch {}
+        API.Session.clear();
+        window.location.reload();
+      }
+    });
+  }
+})();
+
+// ── Product Card Builder ─────────────────────────────
+function buildProductCard(p) {
+  const price   = p.price ? `₹${Number(p.price).toLocaleString('en-IN')}` : '';
+  const mrp     = p.mrp   ? `₹${Number(p.mrp).toLocaleString('en-IN')}`   : '';
+  const disc    = (p.mrp && p.price && p.mrp > p.price)
+                  ? Math.round(((p.mrp - p.price) / p.mrp) * 100) + '% OFF'
+                  : '';
+  const img     = (p.images && p.images[0]) ? p.images[0].url : 'assets/images/placeholder.svg';
+  const brand   = p.brand || p.category?.name || 'ClassMora';
+  const name    = p.name || 'Product';
+  return `
+    <div class="product-card" onclick="window.location.href='product.html?id=${p._id}'">
+      <div class="pc-img-wrap">
+        <img src="${img}" alt="${name}" loading="lazy" onerror="this.src='assets/images/placeholder.svg'">
+        ${disc ? `<span class="pc-badge">${disc}</span>` : ''}
+        <button class="pc-wish" title="Wishlist">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="pc-info">
+        <p class="pc-brand">${brand}</p>
+        <p class="pc-name">${name}</p>
+        <div class="pc-price">
+          <span class="pc-sp">${price}</span>
+          ${mrp ? `<span class="pc-mrp">${mrp}</span>` : ''}
+          ${disc ? `<span class="pc-off">${disc}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Skeleton / Placeholder ───────────────────────────
+function skeletonCards(n = 4) {
+  return Array(n).fill(`
+    <div class="product-card" style="pointer-events:none">
+      <div class="pc-img-wrap" style="background:#f0f0f0;min-height:240px;border-radius:8px"></div>
+      <div class="pc-info">
+        <div style="height:12px;background:#eee;border-radius:4px;margin:8px 0;width:60%"></div>
+        <div style="height:14px;background:#eee;border-radius:4px;margin:4px 0;width:80%"></div>
+        <div style="height:12px;background:#eee;border-radius:4px;margin:4px 0;width:40%"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Load Products from Backend ───────────────────────
+async function loadProducts() {
+  const featGrid = document.getElementById('productGrid');
+  const newGrid  = document.getElementById('newGrid');
+
+  if (featGrid) featGrid.innerHTML = skeletonCards(4);
+  if (newGrid)  newGrid.innerHTML  = skeletonCards(4);
+
+  try {
+    const res = await API.Products.getAll('limit=8');
+    const products = res.products || res.data || [];
+
+    if (featGrid) {
+      const featured = products.slice(0, 4);
+      featGrid.innerHTML = featured.length
+        ? featured.map(buildProductCard).join('')
+        : '<p style="color:var(--text-3);padding:20px">No products found.</p>';
+    }
+    if (newGrid) {
+      const newArrivals = products.slice(4, 8);
+      newGrid.innerHTML = newArrivals.length
+        ? newArrivals.map(buildProductCard).join('')
+        : '<p style="color:var(--text-3);padding:20px">No products found.</p>';
+    }
+  } catch (err) {
+    // Backend offline — show message
+    const msg = '<p style="color:var(--text-3);padding:20px;text-align:center">Products unavailable — start the backend server to load products.</p>';
+    if (featGrid) featGrid.innerHTML = msg;
+    if (newGrid)  newGrid.innerHTML  = msg;
+    console.warn('ClassMora API:', err.message);
+  }
+}
+
+loadProducts();
+</script>
 </body>
 </html>
