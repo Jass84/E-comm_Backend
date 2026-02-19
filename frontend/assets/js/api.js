@@ -9,18 +9,26 @@ const API_BASE = 'http://localhost:5000/api';
 
 async function apiRequest(path, options = {}) {
   const url = `${API_BASE}${path}`;
-  const defaults = {
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',   // send/receive cookies (JWT)
+
+  // Build headers — always JSON + attach stored JWT token if available
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  const storedToken = localStorage.getItem('cm_token');
+  if (storedToken) headers['Authorization'] = `Bearer ${storedToken}`;
+
+  const config = {
+    credentials: 'include',   // send/receive httpOnly cookies too
+    ...options,
+    headers,
   };
-  const config = { ...defaults, ...options, headers: { ...defaults.headers, ...(options.headers || {}) } };
 
   try {
     const res = await fetch(url, config);
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`);
+    if (!res.ok) throw new Error(data.message || (data.errors && data.errors[0]?.msg) || `Request failed (${res.status})`);
     return data;
   } catch (err) {
+    // Re-throw network errors with a clear message
+    if (err instanceof TypeError) throw new Error('Cannot connect to server. Make sure the backend is running on port 5000.');
     throw err;
   }
 }
