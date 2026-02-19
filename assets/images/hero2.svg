@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 500" width="1280" height="500">
+  <defs>
+    <linearGradient id="bg2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0d3b66"/>
+      <stop offset="100%" stop-color="#1b6ca8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="500" fill="url(#bg2)"/>
+  <circle cx="900" cy="300" r="280" fill="rgba(255,255,255,.04)"/>
+  <circle cx="200" cy="400" r="200" fill="rgba(255,255,255,.03)"/>
+  <rect x="60" y="80" width="140" height="30" rx="15" fill="rgba(255,255,255,.18)"/>
+  <text x="130" y="100" text-anchor="middle" font-family="Montserrat,Arial" font-size="11" font-weight="700" fill="#fff" letter-spacing="1.5">NEW ARRIVALS</text>
+  <text x="60" y="185" font-family="Montserrat,Arial" font-size="68" font-weight="900" fill="#fff" letter-spacing="-1">Fresh Styles</text>
+  <text x="60" y="242" font-family="Montserrat,Arial" font-size="68" font-weight="900" fill="rgba(255,255,255,.25)" letter-spacing="-1">for Season</text>
+  <text x="62" y="280" font-family="Montserrat,Arial" font-size="18" fill="rgba(255,255,255,.65)">Explore the latest collection</text>
+  <rect x="60" y="308" width="160" height="46" rx="6" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+  <text x="140" y="337" text-anchor="middle" font-family="Montserrat,Arial" font-size="13" font-weight="700" fill="#fff" letter-spacing="1">EXPLORE NOW</text>
+</svg>

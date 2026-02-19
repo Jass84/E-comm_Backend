@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+  <rect width="480" height="640" fill="#e8f0fb"/>
+  <!-- jeans silhouette -->
+  <g fill="#1565c0" opacity=".13">
+    <path d="M170 100 L160 380 L200 380 L240 260 L280 380 L320 380 L310 100Z"/>
+  </g>
+  <g fill="none" stroke="#1565c0" stroke-width="2.5" opacity=".35">
+    <path d="M170 100 L160 380 L200 380 L240 260 L280 380 L320 380 L310 100Z"/>
+    <line x1="240" y1="100" x2="240" y2="260" stroke-dasharray="6,4"/>
+  </g>
+  <rect x="40" y="520" width="400" height="80" rx="6" fill="rgba(0,0,0,.04)"/>
+  <text x="240" y="554" text-anchor="middle" font-family="Montserrat,Arial" font-size="13" font-weight="700" fill="#1565c0" letter-spacing="1">DENIM JEANS</text>
+  <text x="240" y="574" text-anchor="middle" font-family="Montserrat,Arial" font-size="11" fill="#888">BRAND B</text>
+</svg>

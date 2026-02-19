@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+  <rect width="480" height="640" fill="#fce8ea"/>
+  <!-- shirt silhouette -->
+  <g fill="#d81b2a" opacity=".18">
+    <path d="M160 120 L100 170 L130 180 L120 340 L360 340 L350 180 L380 170 L320 120 Q300 160 240 160 Q180 160 160 120Z"/>
+  </g>
+  <g fill="none" stroke="#d81b2a" stroke-width="2.5" opacity=".4">
+    <path d="M160 120 L100 170 L130 180 L120 340 L360 340 L350 180 L380 170 L320 120 Q300 160 240 160 Q180 160 160 120Z"/>
+  </g>
+  <rect x="40" y="520" width="400" height="80" rx="6" fill="rgba(0,0,0,.04)"/>
+  <text x="240" y="554" text-anchor="middle" font-family="Montserrat,Arial" font-size="13" font-weight="700" fill="#d81b2a" letter-spacing="1">CLASSIC SHIRT</text>
+  <text x="240" y="574" text-anchor="middle" font-family="Montserrat,Arial" font-size="11" fill="#888">BRAND A</text>
+</svg>

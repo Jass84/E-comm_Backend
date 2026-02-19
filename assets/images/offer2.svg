@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" width="640" height="320">
+  <defs>
+    <linearGradient id="o2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1b2838"/>
+      <stop offset="100%" stop-color="#2d4a6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="320" fill="url(#o2)"/>
+  <circle cx="120" cy="160" r="180" fill="rgba(255,255,255,.04)"/>
+  <text x="48" y="100" font-family="Montserrat,Arial" font-size="14" font-weight="700" fill="rgba(255,255,255,.6)" letter-spacing="3">EXCLUSIVE DEAL</text>
+  <text x="44" y="185" font-family="Montserrat,Arial" font-size="60" font-weight="900" fill="#fff" letter-spacing="-1">FLAT ₹500</text>
+  <text x="44" y="232" font-family="Montserrat,Arial" font-size="22" fill="rgba(255,255,255,.75)">OFF on ₹2,499 &amp; above</text>
+  <rect x="44" y="258" width="164" height="38" rx="5" fill="#f9a825"/>
+  <text x="126" y="282" text-anchor="middle" font-family="Montserrat,Arial" font-size="12" font-weight="700" fill="#1b2838" letter-spacing="1">USE CODE: CM500</text>
+</svg>

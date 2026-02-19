@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+  <rect width="480" height="640" fill="#fce4ec"/>
+  <g fill="#880e4f" opacity=".12">
+    <path d="M180 80 Q190 100 200 110 L170 130 L150 150 L140 440 L340 440 L330 150 L310 130 L280 110 Q290 100 300 80 Q270 120 240 120 Q210 120 180 80Z"/>
+    <ellipse cx="240" cy="80" rx="30" ry="30"/>
+  </g>
+  <g fill="none" stroke="#880e4f" stroke-width="2.5" opacity=".36">
+    <path d="M180 80 Q190 100 200 110 L170 130 L150 150 L140 440 L340 440 L330 150 L310 130 L280 110 Q290 100 300 80"/>
+    <ellipse cx="240" cy="80" rx="30" ry="30"/>
+    <line x1="220" y1="130" x2="220" y2="240" stroke-dasharray="5,4"/>
+  </g>
+  <rect x="40" y="520" width="400" height="80" rx="6" fill="rgba(0,0,0,.04)"/>
+  <text x="240" y="554" text-anchor="middle" font-family="Montserrat,Arial" font-size="13" font-weight="700" fill="#880e4f" letter-spacing="1">ETHNIC KURTA</text>
+  <text x="240" y="574" text-anchor="middle" font-family="Montserrat,Arial" font-size="11" fill="#888">BRAND C</text>
+</svg>

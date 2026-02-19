@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+  <defs>
+    <linearGradient id="kg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fff9c4"/>
+      <stop offset="100%" stop-color="#f57f17"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="640" fill="url(#kg)"/>
+  <circle cx="240" cy="140" r="44" fill="rgba(255,255,255,.25)"/>
+  <path d="M195 200 L150 250 L175 265 L167 440 L313 440 L305 265 L330 250 L285 200 Q268 230 240 230 Q212 230 195 200Z" fill="rgba(255,255,255,.2)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+  <text x="240" y="490" text-anchor="middle" font-family="Montserrat,Arial" font-size="18" font-weight="700" fill="#fff" letter-spacing="3">KIDS</text>
+</svg>

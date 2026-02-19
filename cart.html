@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Bag — ClassMora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ── Cart page extras ── */
+  .cart-wrap { flex: 1; background: var(--bg-2); padding: 32px 0 60px; }
+
+  /* Checkout steps */
+  .checkout-steps {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin-bottom: 32px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; color: #bbb;
+    padding: 0 20px;
+  }
+  .step.active { color: var(--primary); }
+  .step.done   { color: var(--success); }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #e0e0e0; color: #999;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+    transition: all .2s;
+  }
+  .step.active .step-num { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(216,27,42,.35); }
+  .step.done   .step-num { background: var(--success); color: #fff; }
+  .step-line { flex: 1; height: 2px; background: #e0e0e0; max-width: 80px; }
+  .step-line.done { background: var(--success); }
+
+  /* Cart page title row */
+  .cart-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cart-title-row h2 { font-size: 20px; font-weight: 800; letter-spacing: -.2px; }
+  .cart-title-row .item-count {
+    font-size: 13px; color: var(--text-3);
+    background: var(--bg-3); padding: 4px 12px; border-radius: 99px;
+  }
+
+  /* Cart item card */
+  .cart-item {
+    display: flex; gap: 0;
+    border-radius: 10px; overflow: hidden;
+    background: #fff; border: 1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+  .cart-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+  .ci-thumb {
+    width: 120px; min-height: 150px; flex-shrink: 0;
+    background: var(--bg-2); position: relative; overflow: hidden;
+  }
+  .ci-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform .4s ease;
+  }
+  .cart-item:hover .ci-thumb img { transform: scale(1.04); }
+  .ci-body {
+    flex: 1; padding: 18px 20px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .ci-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .ci-brand { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+  .ci-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 6px; }
+  .ci-meta { font-size: 12px; color: var(--text-3); display: flex; gap: 12px; }
+  .ci-meta span { background: var(--bg-2); padding: 2px 8px; border-radius: 3px; }
+  .ci-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; gap: 12px; }
+  .ci-price-block { display: flex; align-items: baseline; gap: 8px; }
+  .ci-price-now { font-size: 19px; font-weight: 900; color: var(--text); }
+  .ci-price-old { font-size: 13px; color: var(--text-3); text-decoration: line-through; }
+  .ci-price-off  { font-size: 12px; font-weight: 700; color: var(--success); background: #f1fdf3; padding: 2px 7px; border-radius: 3px; }
+  .ci-actions { display: flex; align-items: center; gap: 10px; }
+  .qty-ctrl { display: flex; align-items: center; border: 1.5px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; }
+  .qty-btn {
+    width: 34px; height: 34px; background: none; border: none;
+    font-size: 18px; color: var(--text-2); cursor: pointer; line-height: 1;
+    transition: background .15s, color .15s;
+  }
+  .qty-btn:hover { background: var(--bg-2); color: var(--primary); }
+  .qty-val { min-width: 32px; text-align: center; font-size: 14px; font-weight: 800; border-left: 1.5px solid var(--border); border-right: 1.5px solid var(--border); height: 34px; display: flex; align-items: center; justify-content: center; }
+  .rm-btn {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; color: var(--text-3);
+    background: none; border: 1.5px solid var(--border);
+    padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    transition: all .15s;
+  }
+  .rm-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+
+  /* Coupon */
+  .coupon-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .coupon-card svg { color: var(--primary); flex-shrink: 0; }
+  .coupon-input {
+    flex: 1; border: 1.5px solid var(--border); border-radius: 6px;
+    padding: 10px 14px; font-size: 13px; font-family: inherit;
+    outline: none; text-transform: uppercase; letter-spacing: 1px;
+    transition: border-color .2s;
+  }
+  .coupon-input:focus { border-color: var(--primary); }
+  .coupon-btn {
+    padding: 10px 20px; background: var(--primary); color: #fff;
+    border: none; border-radius: 6px; font-family: inherit;
+    font-size: 13px; font-weight: 800; letter-spacing: .5px; cursor: pointer;
+    transition: background .15s;
+  }
+  .coupon-btn:hover { background: var(--primary-dark); }
+
+  /* Summary card */
+  .summary-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    position: sticky; top: calc(var(--nav-h) + 12px);
+  }
+  .summary-card-head {
+    background: var(--bg-2); padding: 16px 20px;
+    font-size: 12px; font-weight: 800; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--text-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-card-body { padding: 20px; }
+  .sum-row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; margin-bottom: 14px; color: var(--text-2);
+  }
+  .sum-row.green span:last-child { color: var(--success); font-weight: 700; }
+  .sum-row.free span:last-child  { color: var(--success); font-weight: 700; }
+  .sum-row-divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+  .sum-total {
+    display: flex; justify-content: space-between;
+    font-size: 17px; font-weight: 900;
+    padding: 14px 0 4px;
+    border-top: 2px solid var(--text);
+  }
+  .sum-savings {
+    background: linear-gradient(135deg, #f1fdf3, #e8f5e9);
+    border: 1px solid #c8e6c9; border-radius: 8px;
+    padding: 10px 14px; font-size: 12.5px;
+    color: var(--success); font-weight: 700;
+    margin: 16px 0 4px; text-align: center;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .checkout-btn {
+    width: 100%; margin-top: 16px; padding: 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff; border: none; border-radius: 8px;
+    font-family: inherit; font-size: 14px; font-weight: 900;
+    letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 4px 16px rgba(216,27,42,.3);
+  }
+  .checkout-btn:hover { box-shadow: 0 8px 24px rgba(216,27,42,.45); transform: translateY(-1px); }
+  .secure-note { text-align: center; margin-top: 14px; font-size: 12px; color: var(--text-3); display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+  /* Trust badges in summary */
+  .summary-trust { border-top: 1px solid var(--border); padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .st-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-3); }
+  .st-item svg { color: var(--success); flex-shrink: 0; }
+
+  /* Empty cart */
+  .empty-cart {
+    background: #fff; border-radius: 10px; border: 1px solid var(--border);
+    text-align: center; padding: 72px 32px;
+  }
+  .empty-cart-icon {
+    width: 100px; height: 100px; background: var(--bg-2); border-radius: 50%;
+    margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;
+  }
+  .empty-cart-icon svg { color: #ccc; }
+  .empty-cart h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .empty-cart p  { color: var(--text-3); margin-bottom: 28px; font-size: 14px; }
+  .empty-cart a {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 36px; background: var(--primary); color: #fff;
+    border-radius: 8px; font-weight: 800; font-size: 14px; letter-spacing: .5px;
+    transition: background .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(216,27,42,.3);
+  }
+  .empty-cart a:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(216,27,42,.4); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <div class="left">
+        <a href="category.html">New Arrivals</a>
+        <a href="category.html?cat=sale" style="color:#ff6b35;font-weight:600">Sale Up to 60% Off 🔥</a>
+        <a href="#">Free Delivery Over ₹999</a>
+        <a href="#">App Only Deals</a>
+      </div>
+      <div class="right">
+        <span class="dark-lbl">Dark Mode</span>
+        <label class="switch"><input type="checkbox" id="darkToggle"><span></span></label>
+        <span class="tb-sep">|</span>
+        <a href="#" class="signin-link">Sign In</a>
+        <span class="tb-sep">|</span>
+        <a href="#" class="register-link">Register</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT -->
+<div class="announcement">
+  🎉 &nbsp; Grand End-of-Season Sale — Extra 20% off on orders above ₹1499 | Use code: <strong>CLASSMORA20</strong> &nbsp; 🎁
+  <button class="ann-close" id="annClose" title="Close">&times;</button>
+</div>
+
+<!-- NAVBAR -->
+<nav class="main-nav" id="mainNav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><img src="assets/images/logo.svg" alt="ClassMora"></a>
+      <ul class="nav-cats">
+        <li class="nav-item" data-cat="women"><a href="category.html?cat=women">Women</a><div class="mega" id="mega-women"></div></li>
+        <li class="nav-item" data-cat="men"><a href="category.html?cat=men">Men</a><div class="mega" id="mega-men"></div></li>
+        <li class="nav-item" data-cat="kids"><a href="category.html?cat=kids">Kids</a><div class="mega" id="mega-kids"></div></li>
+        <li class="nav-item" data-cat="home"><a href="category.html?cat=home">Home &amp; Living</a><div class="mega" id="mega-home"></div></li>
+        <li class="nav-item" data-cat="beauty"><a href="category.html?cat=beauty">Beauty</a><div class="mega" id="mega-beauty"></div></li>
+        <li class="nav-item"><a href="category.html?cat=sale" style="color:#d81b2a;font-weight:900">SALE</a></li>
+      </ul>
+      <div class="nav-right">
+        <label class="nav-search" for="navSearchPg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="navSearchPg" type="text" placeholder="Search for brands, clothes…">
+        </label>
+        <button class="icon-btn wish-icon-btn" title="Wishlist" onclick="window.location.href='category.html'" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="wish-count" style="display:none">0</span>
+        </button>
+        <a href="cart.html" class="icon-btn" title="Cart" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-count">0</span>
+        </a>
+        <a href="#" class="icon-btn signin-link" title="Account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="page-header">
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">›</span>
+      <a href="category.html">Shop</a>
+      <span class="sep">›</span>
+      <span>Shopping Bag</span>
+    </nav>
+  </div>
+</div>
+
+<!-- CART BODY -->
+<div class="cart-wrap">
+  <div class="container">
+
+    <!-- Checkout steps -->
+    <div class="checkout-steps">
+      <div class="step active">
+        <div class="step-num">1</div>
+        <span>Bag</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <span>Address</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <span>Payment</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <span>Confirm</span>
+      </div>
+    </div>
+
+    <div class="cart-layout">
+
+      <!-- Left: items + coupon -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:16px;min-width:0">
+        <div class="cart-title-row">
+          <h2>My Shopping Bag</h2>
+          <span class="item-count" id="bagItemCount">0 Items</span>
+        </div>
+        <div id="cartItems"></div>
+
+        <!-- Coupon -->
+        <div class="coupon-card">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+          <input class="coupon-input" type="text" placeholder="Enter coupon code" id="couponInput">
+          <button class="coupon-btn" id="couponBtn">Apply</button>
+        </div>
+      </div>
+
+      <!-- Right: summary -->
+      <div class="cart-summary" id="cartSummary">
+        <div class="summary-card">
+          <div class="summary-card-head">Price Details</div>
+          <div class="summary-card-body">
+            <div class="sum-row"><span>Total MRP</span><span id="smMrp">₹0</span></div>
+            <div class="sum-row green"><span>Discount on MRP</span><span id="smDisc">-₹0</span></div>
+            <div class="sum-row free"><span>Delivery Charges</span><span id="smDel">FREE</span></div>
+            <div class="sum-row green" id="couponRow" style="display:none"><span>Coupon Discount</span><span id="smCoupon">-₹0</span></div>
+            <div class="sum-row-divider"></div>
+            <div class="sum-total"><span>Total Amount</span><span id="smTotal">₹0</span></div>
+            <div class="sum-savings" id="smSaving" style="display:none">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span></span>
+            </div>
+            <button class="checkout-btn" onclick="alert('Proceeding to checkout!')">
+              Proceed to Checkout &rarr;
+            </button>
+            <div class="secure-note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              100% Secure &amp; Encrypted Payment
+            </div>
+          </div>
+          <div class="summary-trust">
+            <div class="st-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><path d="m16 8 5 3v5h-5"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Free delivery on orders above ₹999
+            </div>
+            <div class="st-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Easy 30-day returns &amp; exchanges
+            </div>
+            <div class="st-item">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              100% genuine &amp; quality guaranteed
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FULL FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-grid">
+        <div class="ff-brand footer-col">
+          <img class="logo-f" src="assets/images/logo.svg" alt="ClassMora">
+          <p>India's premium fashion destination. Offering the latest styles from top brands at unbeatable prices with fast delivery.</p>
+          <div class="ff-social">
+            <div class="soc-icon">Fb</div>
+            <div class="soc-icon">Ig</div>
+            <div class="soc-icon">Tw</div>
+            <div class="soc-icon">Yt</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Quick Links</h5>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="category.html">New Arrivals</a></li>
+            <li><a href="category.html?cat=sale">Sale</a></li>
+            <li><a href="#">Style Guide</a></li>
+            <li><a href="#">Gift Cards</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Help &amp; Support</h5>
+          <ul>
+            <li><a href="#">Track Order</a></li>
+            <li><a href="#">Returns &amp; Refunds</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col footer-nl">
+          <h5>Newsletter</h5>
+          <p>Subscribe for exclusive deals and first look at new collections.</p>
+          <form class="nl-form" id="nlForm">
+            <input type="email" placeholder="Your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 ClassMora. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Sitemap</a>
+      </div>
+      <div class="payment-icons">
+        <span class="pay-icon">VISA</span>
+        <span class="pay-icon">MC</span>
+        <span class="pay-icon">UPI</span>
+        <span class="pay-icon">COD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="assets/js/main.js" defer></script>
+<script>
+  // Update bag item count badge
+  document.addEventListener('DOMContentLoaded', () => {
+    const cart = JSON.parse(localStorage.getItem('cm_cart') || '[]');
+    const bagCount = document.getElementById('bagItemCount');
+    if (bagCount) {
+      const n = cart.reduce((s, i) => s + i.qty, 0);
+      bagCount.textContent = n + ' Item' + (n !== 1 ? 's' : '');
+    }
+
+    // Coupon apply
+    document.getElementById('couponBtn')?.addEventListener('click', () => {
+      const code = document.getElementById('couponInput')?.value.trim().toUpperCase();
+      if (code === 'CLASSMORA20') {
+        document.getElementById('couponRow').style.display = 'flex';
+        document.getElementById('smCoupon').textContent = '-₹200';
+        if (window.showToast) showToast('Coupon applied! ₹200 off 🎉');
+      } else {
+        if (window.showToast) showToast('Invalid coupon code', false);
+      }
+    });
+  });
+</script>
+</body>
+</html>

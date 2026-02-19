@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 500" width="1280" height="500">
+  <defs>
+    <linearGradient id="bg1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent1" x1="0" x2="1">
+      <stop offset="0%" stop-color="#d81b2a"/>
+      <stop offset="100%" stop-color="#ff6b35"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="500" fill="url(#bg1)"/>
+  <!-- decorative circles -->
+  <circle cx="980" cy="250" r="300" fill="rgba(216,27,42,.07)"/>
+  <circle cx="1100" cy="150" r="180" fill="rgba(255,107,53,.06)"/>
+  <!-- pill badge -->
+  <rect x="60" y="80" width="130" height="30" rx="15" fill="url(#accent1)"/>
+  <text x="125" y="100" text-anchor="middle" font-family="Montserrat,Arial" font-size="11" font-weight="700" fill="#fff" letter-spacing="1.5">SUMMER SALE</text>
+  <!-- headline -->
+  <text x="60" y="188" font-family="Montserrat,Arial" font-size="72" font-weight="900" fill="#fff" letter-spacing="-1">Up to 60% Off</text>
+  <!-- sub -->
+  <text x="62" y="236" font-family="Montserrat,Arial" font-size="20" fill="rgba(255,255,255,.7)" letter-spacing=".5">On selected brands &amp; categories</text>
+  <!-- CTA -->
+  <rect x="60" y="268" width="168" height="46" rx="6" fill="url(#accent1)"/>
+  <text x="144" y="297" text-anchor="middle" font-family="Montserrat,Arial" font-size="13" font-weight="700" fill="#fff" letter-spacing="1">SHOP NOW</text>
+  <!-- decorative figure outline -->
+  <g fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.08)" stroke-width="1.5">
+    <ellipse cx="940" cy="120" rx="55" ry="55"/>
+    <path d="M860 500 Q880 260 940 200 Q1000 260 1020 500Z"/>
+  </g>
+</svg>

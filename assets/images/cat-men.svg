@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+  <defs>
+    <linearGradient id="mg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#bbdefb"/>
+      <stop offset="100%" stop-color="#1565c0"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="640" fill="url(#mg)"/>
+  <circle cx="240" cy="130" r="55" fill="rgba(255,255,255,.2)"/>
+  <path d="M160 205 L85 285 L130 305 L118 560 L210 560 L220 360 L260 360 L270 560 L362 560 L350 305 L395 285 L320 205 Q295 245 240 245 Q185 245 160 205Z" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+  <text x="240" y="610" text-anchor="middle" font-family="Montserrat,Arial" font-size="18" font-weight="700" fill="#fff" letter-spacing="3">MEN</text>
+</svg>

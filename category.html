@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Category — ClassMora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ── Category Hero ── */
+    .cat-hero{padding:48px 0 40px;color:#fff;position:relative;overflow:hidden;background:#d81b2a}
+    .cat-hero-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1200px;margin:0 auto;padding:0 24px}
+    .cat-hero-tag{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-bottom:8px}
+    .cat-hero h1{font-size:2.4rem;font-weight:900;margin:0 0 10px;line-height:1.1}
+    .cat-hero p{font-size:1rem;opacity:.88;margin:0;max-width:480px}
+    .cat-hero-sub-pill{display:inline-block;margin-top:12px;padding:4px 14px;border-radius:999px;background:rgba(255,255,255,.22);font-size:.82rem;font-weight:600;backdrop-filter:blur(4px)}
+    .cat-hero-img{width:180px;height:180px;object-fit:contain;opacity:.9;flex-shrink:0}
+    @media(max-width:640px){.cat-hero h1{font-size:1.6rem}.cat-hero-img{display:none}}
+    /* ── Breadcrumb ── */
+    .cat-breadcrumb-bar{background:var(--bg-2);border-bottom:1px solid var(--border);padding:10px 0}
+    #catBreadcrumb{display:flex;align-items:center;gap:6px;font-size:.82rem;color:#888;flex-wrap:wrap}
+    #catBreadcrumb a{color:#888;text-decoration:none;transition:color .18s}
+    #catBreadcrumb a:hover{color:var(--primary)}
+    #catBreadcrumb .sep{opacity:.5}
+    /* ── Layout ── */
+    .category-layout{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:start;padding-top:28px;padding-bottom:40px}
+    @media(max-width:900px){.category-layout{grid-template-columns:1fr}.filters-sidebar{display:none}}
+    /* ── Sidebar ── */
+    .filters-sidebar{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:sticky;top:80px}
+    .filters-sidebar h3{font-size:1rem;font-weight:700;margin:0 0 16px;display:flex;justify-content:space-between;align-items:center}
+    #clearAll{background:none;border:none;color:var(--primary);font-size:.78rem;font-weight:600;cursor:pointer;padding:0;transition:opacity .2s}
+    #clearAll:hover{opacity:.7}
+    .filter-group{border-top:1px solid var(--border);padding:14px 0}
+    .filter-toggle{width:100%;background:none;border:none;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0;color:var(--text)}
+    .filter-toggle .arrow{transition:transform .22s;font-size:.7rem}
+    .filter-toggle.open .arrow{transform:rotate(180deg)}
+    .filter-body{display:none;margin-top:10px;flex-direction:column;gap:7px}
+    .filter-body.show{display:flex}
+    .filter-body label{font-size:.83rem;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--text)}
+    .filter-body label input{accent-color:var(--primary)}
+    .size-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+    .size-btn{padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--radius);background:none;font-size:.8rem;cursor:pointer;transition:all .18s;font-family:inherit}
+    .size-btn:hover,.size-btn.active{border-color:var(--primary);background:var(--primary);color:#fff}
+    /* ── Listing area ── */
+    .listing-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+    .listing-header h2{font-size:1.15rem;font-weight:700;margin:0}
+    .listing-header .product-count{font-size:.88rem;color:#888;font-weight:400;margin-left:6px}
+    .sort-select{padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-family:inherit;background:var(--bg);cursor:pointer;transition:border-color .18s}
+    .sort-select:focus{outline:none;border-color:var(--primary)}
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <div class="left">
+        <a href="category.html">New Arrivals</a>
+        <a href="category.html?cat=sale" style="color:#ff6b35;font-weight:600">Sale Up to 60% Off 🔥</a>
+        <a href="#">Free Delivery Over ₹999</a>
+        <a href="#">App Only Deals</a>
+      </div>
+      <div class="right">
+        <span class="dark-lbl">Dark Mode</span>
+        <label class="switch"><input type="checkbox" id="darkToggle"><span></span></label>
+        <span class="tb-sep">|</span>
+        <a href="#" class="signin-link">Sign In</a>
+        <span class="tb-sep">|</span>
+        <a href="#" class="register-link">Register</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT -->
+<div class="announcement" id="announcement">
+  🎉 &nbsp; Grand End-of-Season Sale — Extra 20% off on orders above ₹1499 | Use code: <strong>CLASSMORA20</strong> &nbsp; 🎁
+  <button class="ann-close" id="annClose" title="Close">&times;</button>
+</div>
+
+<!-- NAVBAR -->
+<nav class="main-nav" id="mainNav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><img src="assets/images/logo.svg" alt="ClassMora"></a>
+      <ul class="nav-cats">
+        <li class="nav-item" data-cat="women"><a href="category.html?cat=women">Women</a><div class="mega" id="mega-women"></div></li>
+        <li class="nav-item" data-cat="men"><a href="category.html?cat=men">Men</a><div class="mega" id="mega-men"></div></li>
+        <li class="nav-item" data-cat="kids"><a href="category.html?cat=kids">Kids</a><div class="mega" id="mega-kids"></div></li>
+        <li class="nav-item" data-cat="home"><a href="category.html?cat=home">Home &amp; Living</a><div class="mega" id="mega-home"></div></li>
+        <li class="nav-item" data-cat="beauty"><a href="category.html?cat=beauty">Beauty</a><div class="mega" id="mega-beauty"></div></li>
+        <li class="nav-item"><a href="category.html?cat=sale" style="color:#d81b2a;font-weight:900">SALE</a></li>
+      </ul>
+      <div class="nav-right">
+        <label class="nav-search" for="navSearchPg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="navSearchPg" type="text" placeholder="Search for brands, clothes…">
+        </label>
+        <button class="icon-btn wish-icon-btn" title="Wishlist" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="wish-count" style="display:none">0</span>
+        </button>
+        <a href="cart.html" class="icon-btn" title="Cart" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-count">0</span>
+        </a>
+        <a href="#" class="icon-btn signin-link" title="Account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- CATEGORY HERO (populated by JS) -->
+<div class="cat-hero" id="catHero"></div>
+
+<!-- BREADCRUMB BAR -->
+<div class="cat-breadcrumb-bar">
+  <div class="container">
+    <nav id="catBreadcrumb" aria-label="Breadcrumb"></nav>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="container category-layout">
+
+  <!-- FILTERS SIDEBAR -->
+  <aside class="filters-sidebar">
+    <h3>Filters <button id="clearAll">Clear All</button></h3>
+
+    <!-- Brand — populated by JS -->
+    <div class="filter-group">
+      <button class="filter-toggle open">Brand <span class="arrow">▾</span></button>
+      <div class="filter-body show" id="filterBrands"></div>
+    </div>
+
+    <!-- Sub-category — populated by JS -->
+    <div class="filter-group" id="filterSubGroup" hidden>
+      <button class="filter-toggle open">Category <span class="arrow">▾</span></button>
+      <div class="filter-body show" id="filterSubs"></div>
+    </div>
+
+    <!-- Price range -->
+    <div class="filter-group">
+      <button class="filter-toggle open">Price <span class="arrow">▾</span></button>
+      <div class="filter-body show">
+        <label><input type="checkbox" value="u999" data-filter="price"> Under ₹999</label>
+        <label><input type="checkbox" value="1-2k" data-filter="price"> ₹1,000 – ₹1,999</label>
+        <label><input type="checkbox" value="2-4k" data-filter="price"> ₹2,000 – ₹3,999</label>
+        <label><input type="checkbox" value="4k+"  data-filter="price"> ₹4,000 &amp; above</label>
+      </div>
+    </div>
+
+    <!-- Size -->
+    <div class="filter-group">
+      <button class="filter-toggle open">Size <span class="arrow">▾</span></button>
+      <div class="filter-body show">
+        <div class="size-grid">
+          <button class="size-btn">XS</button>
+          <button class="size-btn">S</button>
+          <button class="size-btn">M</button>
+          <button class="size-btn">L</button>
+          <button class="size-btn">XL</button>
+          <button class="size-btn">XXL</button>
+          <button class="size-btn">Free</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discount -->
+    <div class="filter-group">
+      <button class="filter-toggle">Discount <span class="arrow">▾</span></button>
+      <div class="filter-body">
+        <label><input type="checkbox" value="disc10" data-filter="discount"> 10% and above</label>
+        <label><input type="checkbox" value="disc30" data-filter="discount"> 30% and above</label>
+        <label><input type="checkbox" value="disc50" data-filter="discount"> 50% and above</label>
+      </div>
+    </div>
+  </aside>
+
+  <!-- LISTING AREA -->
+  <div class="listing-area">
+    <div class="listing-header">
+      <h2 id="catHeading">All Products <span class="product-count">0 Products</span></h2>
+      <select class="sort-select" id="sortSelect">
+        <option value="recommended">Recommended</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="newest">Newest First</option>
+        <option value="discount">Highest Discount</option>
+        <option value="rating">Top Rated</option>
+      </select>
+    </div>
+    <div class="product-grid" id="categoryGrid"></div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-grid">
+        <div class="ff-brand footer-col">
+          <img class="logo-f" src="assets/images/logo.svg" alt="ClassMora">
+          <p>India's premium fashion destination. Offering the latest styles from top brands at unbeatable prices.</p>
+          <div class="ff-social">
+            <div class="soc-icon">Fb</div>
+            <div class="soc-icon">Ig</div>
+            <div class="soc-icon">Tw</div>
+            <div class="soc-icon">Yt</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Shop By Category</h5>
+          <ul>
+            <li><a href="category.html?cat=women">Women</a></li>
+            <li><a href="category.html?cat=men">Men</a></li>
+            <li><a href="category.html?cat=kids">Kids</a></li>
+            <li><a href="category.html?cat=home">Home &amp; Living</a></li>
+            <li><a href="category.html?cat=beauty">Beauty</a></li>
+            <li><a href="category.html?cat=sale">Sale 🔥</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Help &amp; Support</h5>
+          <ul>
+            <li><a href="#">My Account</a></li>
+            <li><a href="#">Track Order</a></li>
+            <li><a href="#">Returns &amp; Refunds</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col footer-nl">
+          <h5>Newsletter</h5>
+          <p>Subscribe for exclusive deals and first look at new collections.</p>
+          <form class="nl-form" id="nlForm">
+            <input type="email" placeholder="Your email address" required>
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 ClassMora. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Sitemap</a>
+      </div>
+      <div class="payment-icons">
+        <span class="pay-icon">VISA</span>
+        <span class="pay-icon">MC</span>
+        <span class="pay-icon">UPI</span>
+        <span class="pay-icon">COD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<button class="back-to-top" id="backToTop" title="Back to top">↑</button>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="signin">Sign In</button>
+      <button class="modal-tab" data-tab="register">Register</button>
+    </div>
+    <form class="modal-form" id="signinForm">
+      <h3>Welcome Back</h3>
+      <input type="email" placeholder="Email address" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+    <form class="modal-form hidden" id="registerForm">
+      <h3>Create Account</h3>
+      <input type="text" placeholder="Full name" required>
+      <input type="email" placeholder="Email address" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
