@@ -1,0 +1,79 @@
+### API Test Collection
+### Save this file as test-api.http and use REST Client extension in VS Code
+
+### Test 1: Check if API is running
+GET http://localhost:5000
+
+###
+
+### Test 2: Register a new user
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+###
+
+### Test 3: Register a seller
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Jane Seller",
+  "email": "jane.seller@example.com",
+  "password": "password123",
+  "role": "seller",
+  "storeName": "Jane's Store",
+  "storeDescription": "Quality products for everyone"
+}
+
+###
+
+### Test 4: Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+###
+
+### Test 5: Get current user (Replace YOUR_TOKEN_HERE with actual token from login)
+GET http://localhost:5000/api/auth/me
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Test 6: Update password
+PUT http://localhost:5000/api/auth/updatepassword
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newpassword123"
+}
+
+###
+
+### Test 7: Logout
+POST http://localhost:5000/api/auth/logout
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Test 8: Admin route (will fail without admin role)
+GET http://localhost:5000/api/admin/dashboard
+Authorization: Bearer YOUR_TOKEN_HERE
+
+###
+
+### Test 9: Seller route (will fail if seller not approved)
+GET http://localhost:5000/api/seller/dashboard
+Authorization: Bearer YOUR_TOKEN_HERE

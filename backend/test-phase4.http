@@ -1,0 +1,129 @@
+### ===== RAZORPAY PAYMENT - PHASE 4 =====
+
+### Get Razorpay Key (Frontend needs this)
+GET http://localhost:5000/api/payment/razorpay-key
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Step 1: Create Order (Cart checkout - creates order in DB)
+POST http://localhost:5000/api/orders
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": "PRODUCT_ID_HERE",
+      "quantity": 2
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "John Doe",
+    "phone": "9876543210",
+    "addressLine1": "123 Main Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400001",
+    "country": "India"
+  },
+  "paymentMethod": "Online",
+  "itemsPrice": 99999,
+  "shippingPrice": 0,
+  "taxPrice": 17999,
+  "totalPrice": 117998
+}
+
+### Step 2: Create Razorpay Order (Get payment ID for frontend)
+POST http://localhost:5000/api/payment/create-order
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "amount": 117998,
+  "orderId": "ORDER_ID_FROM_STEP_1"
+}
+
+### Step 3: Verify Payment (After user pays on Razorpay)
+POST http://localhost:5000/api/payment/verify
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "razorpay_order_id": "order_xxxxxxxxxxxxx",
+  "razorpay_payment_id": "pay_xxxxxxxxxxxxx",
+  "razorpay_signature": "signature_from_razorpay",
+  "orderId": "YOUR_ORDER_ID"
+}
+
+### Payment Failed Handler
+POST http://localhost:5000/api/payment/payment-failed
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "orderId": "YOUR_ORDER_ID",
+  "error": {
+    "code": "BAD_REQUEST_ERROR",
+    "description": "Payment failed"
+  }
+}
+
+### Get Payment Details
+GET http://localhost:5000/api/payment/payment-details/pay_xxxxxxxxxxxxx
+Authorization: Bearer YOUR_USER_TOKEN
+
+### Initiate Refund (Admin Only)
+POST http://localhost:5000/api/payment/refund
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "paymentId": "pay_xxxxxxxxxxxxx",
+  "orderId": "YOUR_ORDER_ID",
+  "amount": 117998,
+  "reason": "Product defective - full refund"
+}
+
+### ===== COD ORDER (No Payment Gateway) =====
+
+### Create COD Order
+POST http://localhost:5000/api/orders
+Authorization: Bearer YOUR_USER_TOKEN
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": "PRODUCT_ID_HERE",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "fullName": "Jane Doe",
+    "phone": "9876543210",
+    "addressLine1": "456 Another Street",
+    "city": "Delhi",
+    "state": "Delhi",
+    "pincode": "110001"
+  },
+  "paymentMethod": "COD",
+  "itemsPrice": 49999,
+  "shippingPrice": 50,
+  "taxPrice": 8999,
+  "totalPrice": 59048
+}
+
+### ===== TESTING NOTES =====
+# 
+# For Online Payments:
+# 1. Create order with paymentMethod: "Online"
+# 2. Create Razorpay order using /api/payment/create-order
+# 3. Frontend opens Razorpay checkout with the order ID
+# 4. User completes payment
+# 5. Frontend sends payment details to /api/payment/verify
+# 6. Backend verifies signature and updates order
+# 
+# For COD:
+# 1. Create order with paymentMethod: "COD"
+# 2. Order is created immediately
+# 3. No payment verification needed
+# 4. Payment marked as completed on delivery
