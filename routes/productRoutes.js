@@ -20,6 +20,8 @@ router.get('/:id', getProduct);
 // Protected routes
 router.post('/:id/reviews', protect, addReview);
 
+//create-product
+router.post("/", protect, authorize('seller', 'admin'), checkSellerApproval, upload.array('images', 5), createProduct);
 // Seller routes
 router.get('/seller/stats', protect, authorize('seller'), checkSellerApproval, getSellerStats);
 router.post('/', protect, authorize('seller', 'admin'), checkSellerApproval, upload.array('images', 5), createProduct);

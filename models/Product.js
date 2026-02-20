@@ -127,9 +127,28 @@ const productSchema = new mongoose.Schema({
 });
 
 // Create slug from title before saving
-productSchema.pre('save', function(next) {
+productSchema.pre('save', async function(next) {
   if (this.isModified('title')) {
-    this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const baseSlug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    let slug = baseSlug;
+    let counter = 1;
+    
+    // Check for existing slug and append counter if needed
+    while (true) {
+      const existingProduct = await mongoose.model('Product').findOne({ 
+        slug: slug,
+        _id: { $ne: this._id } // Exclude current product if updating
+      });
+      
+      if (!existingProduct) {
+        break;
+      }
+      
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    
+    this.slug = slug;
   }
   next();
 });
